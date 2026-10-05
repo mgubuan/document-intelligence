@@ -1,0 +1,938 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Document Intelligence Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Reenie+Beanie&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0F0E0C;--ink-el:#1B1916;--ink-deep:#08070A;--line:#292622;--line-strong:#3A3630;
+  --cream:#F4F1EA;--mid:#C9C2B6;--low:#8B847A;--accent:#FF5631;--accent-press:#E8431F;
+  --accent-quiet:rgba(255,86,49,.12);--trust:#3B5BFF;--warm:#E8D49A;--ok:#7FB77E;
+  --brand:'Archivo',system-ui,sans-serif;--sans:'IBM Plex Sans',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;--hand:'Reenie Beanie',cursive;
+  --ease:cubic-bezier(.2,0,.2,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--mid);font-family:var(--sans);font-size:1.0625rem;line-height:1.6;-webkit-font-smoothing:antialiased}
+.shell{width:min(1180px,100% - 32px);margin:0 auto}
+a{color:var(--accent)}a:hover{color:var(--cream)}
+h1,h2,h3{font-family:var(--brand);color:var(--cream);letter-spacing:-.04em;line-height:1.04;margin:0}
+h1{font-size:clamp(40px,7vw,84px);font-weight:800;letter-spacing:-.05em}
+h2{font-size:clamp(28px,4vw,44px);font-weight:800}
+h3{font-size:1.3rem;font-weight:700;letter-spacing:-.02em}
+p{margin:.6em 0}
+em{color:var(--cream)}
+.mono{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--low)}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--low);margin-bottom:14px;display:block}
+.eyebrow.hot{color:var(--accent)}
+.hand{font-family:var(--hand);font-size:1.7rem;color:var(--warm);line-height:1}
+code,.code{font-family:var(--mono);font-size:.85rem}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* nav */
+nav.top{position:sticky;top:0;z-index:20;background:rgba(15,14,12,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+nav.top .shell{display:flex;align-items:center;gap:20px;height:56px;overflow-x:auto;scrollbar-width:none}
+nav.top .shell::-webkit-scrollbar{display:none}
+.wm{font-family:var(--brand);font-weight:800;color:var(--cream);letter-spacing:-.05em;white-space:nowrap;font-size:18px}
+.wm span{color:var(--accent)}
+nav.top a.n{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--low);text-decoration:none;white-space:nowrap;transition:color .15s var(--ease)}
+nav.top a.n:hover,nav.top a.n.on{color:var(--cream)}
+.progress{position:absolute;left:0;bottom:-1px;height:1px;background:var(--accent);width:0;transition:width .12s linear}
+
+section{padding:80px 0;border-bottom:1px solid var(--line)}
+section.deep{background:var(--ink-deep)}
+.lede{max-width:720px;font-size:1.15rem}
+.grid{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.cell{background:var(--ink-el);padding:24px}
+.card{background:var(--ink-el);border:1px solid var(--line);border-radius:12px;padding:24px;transition:border-color .15s var(--ease)}
+.card:hover{border-color:var(--line-strong)}
+.btn{font-family:var(--sans);font-weight:600;font-size:.95rem;border-radius:6px;padding:10px 16px;border:1px solid var(--line);background:var(--ink-el);color:var(--cream);cursor:pointer;transition:background .15s var(--ease),color .15s var(--ease),border-color .15s var(--ease)}
+.btn:hover{background:var(--line)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--accent);border-color:var(--accent)}
+.btn.primary:hover{background:var(--cream);color:var(--ink);border-color:var(--cream)}
+.btn:disabled{opacity:.38;cursor:not-allowed}
+.chip{display:inline-block;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;padding:4px 9px;border-radius:6px;border:1px solid var(--line);color:var(--mid);background:var(--ink)}
+.tag{font-family:var(--mono);font-size:.75rem;color:var(--low)}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:820px){.two{grid-template-columns:1fr}}
+.reveal{opacity:0;transform:translateY(12px);transition:opacity .32s var(--ease),transform .32s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+
+/* hero */
+.hero{padding:96px 0 72px}
+.hero h1 .dot{color:var(--accent)}
+.hero-art{margin-top:48px}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:40px}
+.stat-row div{background:var(--ink-el);padding:20px}
+.stat-row b{display:block;font-family:var(--brand);font-size:2rem;color:var(--cream);letter-spacing:-.04em}
+@media(max-width:700px){.stat-row{grid-template-columns:1fr 1fr}}
+
+/* simulator */
+.sim{display:grid;grid-template-columns:260px 1fr;gap:20px;margin-top:36px}
+@media(max-width:900px){.sim{grid-template-columns:1fr}}
+.stages{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;align-self:start}
+.stage{background:var(--ink-el);padding:14px 16px;cursor:pointer;display:flex;gap:12px;align-items:flex-start;transition:background .15s var(--ease)}
+.stage:hover{background:#221F1B}
+.stage .num{font-family:var(--mono);font-size:.75rem;color:var(--low);padding-top:2px}
+.stage b{color:var(--cream);font-weight:600;display:block;font-size:.95rem}
+.stage small{color:var(--low);font-size:.8rem}
+.stage.on{background:var(--ink)}
+.stage.on .num{color:var(--accent)}
+.stage.done .num::after{content:" ✓";color:var(--ok)}
+.who{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;padding:2px 6px;border-radius:4px;margin-left:6px;vertical-align:2px}
+.who.ai{color:#9FB0FF;border:1px solid rgba(59,91,255,.5)}
+.who.script{color:var(--warm);border:1px solid rgba(232,212,154,.4)}
+.who.you{color:var(--accent);border:1px solid rgba(255,86,49,.5)}
+.stagebox{background:var(--ink-el);border:1px solid var(--line);border-radius:18px;padding:24px;min-height:520px;display:flex;flex-direction:column}
+.stagebox .head{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:16px}
+.stageview{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+@media(max-width:700px){.stageview{grid-template-columns:1fr}}
+.paper{background:var(--cream);color:var(--ink);border-radius:6px;padding:18px;font-size:.82rem;line-height:1.45;position:relative;transition:transform .32s var(--ease),opacity .32s var(--ease)}
+.paper h4{font-family:var(--brand);margin:0 0 4px;font-size:1.1rem;letter-spacing:-.03em}
+.paper table{width:100%;border-collapse:collapse;margin-top:10px;font-size:.78rem}
+.paper td,.paper th{border-bottom:1px solid rgba(15,14,12,.14);padding:4px 2px;text-align:left}
+.paper .stamp{position:absolute;right:14px;top:14px;font-family:var(--mono);font-size:.62rem;border:1px solid rgba(15,14,12,.4);padding:2px 6px;border-radius:4px;letter-spacing:.1em}
+.md{background:var(--ink-deep);border:1px solid var(--line);border-radius:6px;padding:14px;font-family:var(--mono);font-size:.74rem;line-height:1.6;color:var(--mid);white-space:pre-wrap;overflow-x:auto}
+.md .k{color:var(--low)}.md .new{color:var(--warm);background:rgba(232,212,154,.08)}.md .bad{color:var(--accent)}.md .good{color:var(--ok)}
+.stagenav{display:flex;justify-content:space-between;margin-top:18px;gap:12px;flex-wrap:wrap}
+.explain{color:var(--mid);font-size:.95rem}
+.explain b{color:var(--cream)}
+.mini-db{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.72rem}
+.mini-db th{color:var(--low);text-align:left;font-weight:400;border-bottom:1px solid var(--line);padding:6px 4px;letter-spacing:.06em}
+.mini-db td{border-bottom:1px solid var(--line);padding:6px 4px;color:var(--mid)}
+.mini-db tr.newrow td{color:var(--cream);background:rgba(232,212,154,.06)}
+
+/* folders */
+.folders{display:grid;grid-template-columns:320px 1fr;gap:20px;margin-top:36px}
+@media(max-width:860px){.folders{grid-template-columns:1fr}}
+.tree{background:var(--ink-el);border:1px solid var(--line);border-radius:12px;padding:10px;font-family:var(--mono);font-size:.82rem}
+.tree button{display:flex;width:100%;gap:10px;align-items:center;background:none;border:0;color:var(--mid);font:inherit;text-align:left;padding:8px 10px;border-radius:6px;cursor:pointer;transition:background .15s var(--ease),color .15s var(--ease)}
+.tree button:hover{background:var(--ink);color:var(--cream)}
+.tree button.on{background:var(--ink);color:var(--cream);box-shadow:inset 2px 0 0 var(--accent)}
+.tree .ico{width:18px;height:14px;flex:none}
+.tree .grp{color:var(--low);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;padding:12px 10px 4px}
+.fdetail h3{margin-bottom:6px}
+.badge{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:6px;border:1px solid var(--line)}
+.badge.factory{color:var(--warm);border-color:rgba(232,212,154,.35)}
+.badge.product{color:#9FB0FF;border-color:rgba(59,91,255,.5)}
+.badge.gen{color:var(--low)}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:18px}
+.facts div{background:var(--ink);padding:16px}
+.facts b{display:block;color:var(--cream);font-weight:600;font-size:.9rem;margin-top:4px}
+@media(max-width:600px){.facts{grid-template-columns:1fr}}
+
+/* matcher */
+.matcher input{width:100%;background:var(--ink-deep);border:1px solid var(--line);border-radius:6px;color:var(--cream);font-family:var(--mono);font-size:1.05rem;padding:14px 16px}
+.matcher input:focus{outline:2px solid var(--accent);outline-offset:2px}
+.meter{height:10px;border-radius:6px;background:var(--line);overflow:hidden;position:relative;margin:14px 0 6px}
+.meter i{display:block;height:100%;background:var(--ok);width:0;transition:width .25s var(--ease),background .25s var(--ease)}
+.meter .thr{position:absolute;left:80%;top:-4px;bottom:-4px;width:1px;background:var(--cream)}
+.result{font-family:var(--brand);font-size:1.8rem;color:var(--cream);letter-spacing:-.03em;margin-top:6px;min-height:1.2em}
+.verdict{font-family:var(--mono);font-size:.78rem;letter-spacing:.06em;margin-top:8px}
+.vlist{font-family:var(--mono);font-size:.78rem;margin-top:12px}
+.vlist div{padding:6px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px}
+.vlist .al{color:var(--low)}
+
+/* review game */
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+@media(max-width:800px){.choices{grid-template-columns:1fr}}
+.choice{text-align:left;background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:16px;color:var(--mid);cursor:pointer;font:inherit;transition:border-color .15s var(--ease)}
+.choice:hover{border-color:var(--line-strong)}
+.choice b{color:var(--cream);display:block;margin-bottom:4px}
+.choice.right{border-color:var(--ok)}.choice.ok{border-color:var(--warm)}.choice.wrong{border-color:var(--accent)}
+.feedback{margin-top:16px;padding:16px;border-radius:12px;border:1px solid var(--line);background:var(--ink);min-height:64px}
+
+/* graph */
+.graphwrap{display:grid;grid-template-columns:1fr 300px;gap:20px;margin-top:28px}
+@media(max-width:900px){.graphwrap{grid-template-columns:1fr}}
+svg.graph{width:100%;height:auto;background:var(--ink-el);border:1px solid var(--line);border-radius:12px}
+svg.graph .edge{stroke:var(--line-strong);stroke-width:1.2;transition:stroke .2s var(--ease),opacity .2s var(--ease)}
+svg.graph .edge.hl{stroke:var(--warm);stroke-width:2}
+svg.graph .edge.dim{opacity:.15}
+svg.graph .node{cursor:pointer}
+svg.graph .node rect{stroke-width:1;transition:opacity .2s var(--ease),stroke .2s var(--ease)}
+svg.graph .node text{font-family:var(--sans);font-size:12px;pointer-events:none}
+svg.graph .node.dim{opacity:.25}
+svg.graph .node.sel rect{stroke:var(--accent);stroke-width:2}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px}
+.legend span{font-family:var(--mono);font-size:.68rem;color:var(--low);display:flex;gap:6px;align-items:center}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.edgelist{font-family:var(--mono);font-size:.74rem;line-height:1.9}
+.edgelist .rel{color:var(--warm)}
+
+/* ask */
+.qchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.qchips button{font:inherit;font-size:.9rem;background:var(--ink-el);border:1px solid var(--line);color:var(--cream);border-radius:999px;padding:8px 14px;cursor:pointer;transition:border-color .15s var(--ease)}
+.qchips button:hover{border-color:var(--line-strong)}
+.qchips button.on{border-color:var(--accent)}
+.answer{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+@media(max-width:760px){.answer{grid-template-columns:1fr}}
+.route{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.route .r{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;padding:4px 8px;border-radius:6px;border:1px solid var(--line);color:var(--low)}
+.route .r.on{color:var(--cream);border-color:var(--warm)}
+.typing::after{content:"▍";color:var(--accent);animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* guards */
+.toggle{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.toggle button{background:var(--ink);border:0;color:var(--low);font-family:var(--mono);font-size:.74rem;padding:8px 12px;cursor:pointer}
+.toggle button.on{background:var(--line);color:var(--cream)}
+
+/* install */
+.steps{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:28px}
+.step{background:var(--ink-el);padding:22px 24px;display:grid;grid-template-columns:44px 1fr;gap:16px}
+.step .check{width:28px;height:28px;border:1px solid var(--line-strong);border-radius:6px;background:var(--ink);cursor:pointer;display:grid;place-items:center;color:var(--ink);font-weight:700;transition:background .15s var(--ease)}
+.step.done .check{background:var(--ok);border-color:var(--ok)}
+.step.done h3{color:var(--low);text-decoration:line-through;text-decoration-color:var(--line-strong)}
+.cmd{display:flex;align-items:center;gap:8px;background:var(--ink-deep);border:1px solid var(--line);border-radius:6px;padding:8px 8px 8px 12px;margin-top:8px;font-family:var(--mono);font-size:.82rem;color:var(--cream);overflow-x:auto}
+.cmd span{flex:1;white-space:nowrap}
+.cmd button{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;background:var(--ink-el);border:1px solid var(--line);color:var(--low);border-radius:4px;padding:5px 8px;cursor:pointer;flex:none}
+.cmd button:hover{color:var(--cream)}
+.bar{height:6px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:18px}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .32s var(--ease)}
+
+/* plans */
+.plans{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:20px}
+@media(max-width:800px){.plans{grid-template-columns:repeat(2,1fr)}}
+.plans button{font:inherit;font-weight:600;background:var(--ink-el);border:1px solid var(--line);color:var(--cream);border-radius:12px;padding:16px 10px;cursor:pointer;transition:border-color .15s var(--ease)}
+.plans button.on{border-color:var(--accent)}
+.useg{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:16px}
+.useg div{background:var(--ink-el);padding:18px}
+.useg .v{font-family:var(--brand);font-size:1.4rem;letter-spacing:-.03em;margin-top:6px}
+.yes{color:var(--ok)}.no{color:var(--accent)}.maybe{color:var(--warm)}
+@media(max-width:700px){.useg{grid-template-columns:1fr}}
+
+/* quiz */
+.quiz .q{display:none}.quiz .q.on{display:block}
+.opts{display:grid;gap:8px;margin-top:14px}
+.opts button{text-align:left;font:inherit;background:var(--ink);border:1px solid var(--line);color:var(--mid);border-radius:6px;padding:12px 14px;cursor:pointer}
+.opts button:hover{border-color:var(--line-strong)}
+.opts button.right{border-color:var(--ok);color:var(--cream)}
+.opts button.wrong{border-color:var(--accent)}
+.score{font-family:var(--brand);font-size:3rem;color:var(--cream);letter-spacing:-.04em}
+
+/* cheat */
+.say{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:28px}
+.say div{background:var(--ink-el);padding:20px}
+.say q{display:block;font-family:var(--brand);font-weight:700;color:var(--cream);font-size:1.15rem;letter-spacing:-.02em;quotes:"\201C" "\201D"}
+@media(max-width:800px){.say{grid-template-columns:1fr}}
+footer{padding:48px 0;color:var(--low);font-size:.85rem}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--cream);color:var(--ink);font-family:var(--mono);font-size:.78rem;padding:10px 16px;border-radius:6px;opacity:0;transition:opacity .18s var(--ease),transform .18s var(--ease);pointer-events:none;z-index:50}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* doc types */
+.dtabs{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:28px}
+@media(max-width:760px){.dtabs{grid-template-columns:1fr 1fr}}
+.dtabs button{background:var(--ink-el);border:0;color:var(--mid);font:inherit;padding:18px 16px;text-align:left;cursor:pointer;transition:background .15s var(--ease)}
+.dtabs button:hover{background:#221F1B}
+.dtabs button b{display:block;color:var(--cream);font-family:var(--brand);font-size:1.15rem;letter-spacing:-.02em}
+.dtabs button.on{background:var(--ink);box-shadow:inset 0 -2px 0 var(--accent)}
+.dtype{display:grid;grid-template-columns:1.1fr 1fr;gap:20px;margin-top:20px}
+@media(max-width:860px){.dtype{grid-template-columns:1fr}}
+.checks li{margin:6px 0;color:var(--mid)}
+.checks{padding-left:18px;margin:8px 0}
+.linkmap{width:100%;height:auto;background:var(--ink-el);border:1px solid var(--line);border-radius:12px;margin-top:28px}
+.linkmap .lk{cursor:pointer}
+.linkmap .lk path,.linkmap .lk line{transition:stroke .15s var(--ease)}
+.linkmap .lk:hover line,.linkmap .lk.on line,.linkmap .lk:hover path,.linkmap .lk.on path{stroke:#E8D49A}
+.scen{display:grid;grid-template-columns:1fr 1.2fr;gap:20px;margin-top:20px}
+@media(max-width:860px){.scen{grid-template-columns:1fr}}
+.sw{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.sw input{appearance:none;width:34px;height:20px;border-radius:999px;background:var(--line);position:relative;flex:none;cursor:pointer;transition:background .15s var(--ease);margin-top:2px}
+.sw input::after{content:"";position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:var(--cream);transition:left .15s var(--ease)}
+.sw input:checked{background:var(--accent)}
+.sw input:checked::after{left:17px}
+.sw b{color:var(--cream);display:block;font-weight:600;font-size:.95rem}
+.sw small{color:var(--low)}
+
+/* start.py simulator */
+.term{background:var(--ink-deep);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.term .bar2{display:flex;gap:6px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
+.term .bar2 i{width:10px;height:10px;border-radius:50%;background:var(--line-strong);display:inline-block}
+.term pre{margin:0;padding:18px;font-family:var(--mono);font-size:.78rem;line-height:1.65;color:var(--mid);white-space:pre-wrap;min-height:360px}
+.term .ok{color:var(--ok)}.term .miss{color:var(--accent)}.term .hd{color:var(--cream)}.term .nx{color:var(--warm)}
+.ladder{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.ladder div{background:var(--ink-el);padding:12px 16px;display:flex;gap:12px;align-items:center;font-size:.92rem;color:var(--low);transition:background .15s var(--ease),color .15s var(--ease);cursor:pointer}
+.ladder div b{font-family:var(--mono);font-size:.72rem;width:22px}
+.ladder div.done{color:var(--mid)}.ladder div.done b{color:var(--ok)}
+.ladder div.on{background:var(--ink);color:var(--cream)}.ladder div.on b{color:var(--accent)}
+.startgrid{display:grid;grid-template-columns:280px 1fr;gap:20px;margin-top:28px}
+@media(max-width:860px){.startgrid{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<nav class="top"><div class="shell" style="position:relative">
+  <span class="wm">Intelligence Solved<span>.</span></span>
+  <a class="n" href="#start">00 Step 1</a>
+  <a class="n" href="#journey">01 Journey</a>
+  <a class="n" href="#types">02 Documents</a>
+  <a class="n" href="#folders">03 Folders</a>
+  <a class="n" href="#clean">04 Cleanup</a>
+  <a class="n" href="#review">05 Review</a>
+  <a class="n" href="#ask">06 Ask</a>
+  <a class="n" href="#guards">07 Guardrails</a>
+  <a class="n" href="#install">08 Install</a>
+  <a class="n" href="#privacy">09 Privacy</a>
+  <a class="n" href="#quiz">10 Quiz</a>
+  <div class="progress" id="prog"></div>
+</div></nav>
+
+<!-- HERO -->
+<header class="hero"><div class="shell">
+  <span class="eyebrow">— Document intelligence layer · field guide · v3</span>
+  <h1>Drop the paperwork.<br>Ask it anything<span class="dot">.</span></h1>
+  <p class="lede" style="margin-top:22px">A local workspace that turns invoices, purchase orders, payments, and contracts into clean, linked records, then checks them against each other and lets you question them in plain English. It's built from folders, a handful of small scripts, and one AI agent. This guide walks one invoice through the whole thing. <em>Click everything.</em></p>
+  <div class="hero-art reveal">
+    <svg viewBox="0 0 1100 170" width="100%" role="img" aria-label="Flow: PDF, record, database and graph, answer">
+      <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#8B847A" stroke-width="1.5"/></marker></defs>
+      <g font-family="IBM Plex Mono" font-size="12" fill="#8B847A">
+        <!-- pdf -->
+        <rect x="20" y="30" width="110" height="130" rx="6" fill="#F4F1EA"/>
+        <rect x="36" y="48" width="60" height="9" fill="#0F0E0C"/><rect x="36" y="68" width="78" height="4" fill="#C9C2B6"/><rect x="36" y="80" width="70" height="4" fill="#C9C2B6"/><rect x="36" y="92" width="78" height="4" fill="#C9C2B6"/><rect x="36" y="124" width="40" height="8" fill="#FF5631"/>
+        <text x="20" y="20">invoice.pdf</text>
+        <line x1="150" y1="95" x2="250" y2="95" stroke="#8B847A" marker-end="url(#ah)"/>
+        <text x="168" y="85" fill="#9FB0FF">AI reads</text>
+        <!-- md -->
+        <rect x="265" y="30" width="190" height="130" rx="6" fill="#08070A" stroke="#3A3630"/>
+        <text x="280" y="56">vendor_raw: AMZN…</text><text x="280" y="78" fill="#E8D49A">vendor: Amazon</text><text x="280" y="100" fill="#E8D49A">gl: 6400 Supplies</text><text x="280" y="122">needs_review: false</text>
+        <text x="265" y="20">record.md · source of truth</text>
+        <line x1="475" y1="95" x2="575" y2="70" stroke="#8B847A" marker-end="url(#ah)"/>
+        <line x1="475" y1="95" x2="575" y2="125" stroke="#8B847A" marker-end="url(#ah)"/>
+        <text x="482" y="60" fill="#E8D49A">scripts</text>
+        <!-- db -->
+        <ellipse cx="640" cy="52" rx="55" ry="10" fill="#1B1916" stroke="#3A3630"/><rect x="585" y="52" width="110" height="34" fill="#1B1916" stroke="none"/><line x1="585" y1="52" x2="585" y2="86" stroke="#3A3630"/><line x1="695" y1="52" x2="695" y2="86" stroke="#3A3630"/><ellipse cx="640" cy="86" rx="55" ry="10" fill="#1B1916" stroke="#3A3630"/>
+        <text x="710" y="74">database · the numbers</text>
+        <!-- graph -->
+        <circle cx="600" cy="135" r="7" fill="#E8D49A"/><circle cx="650" cy="120" r="7" fill="#9FB0FF"/><circle cx="690" cy="145" r="7" fill="#7FB77E"/>
+        <line x1="600" y1="135" x2="650" y2="120" stroke="#3A3630"/><line x1="650" y1="120" x2="690" y2="145" stroke="#3A3630"/><line x1="600" y1="135" x2="690" y2="145" stroke="#3A3630"/>
+        <text x="710" y="142">graph · the links</text>
+        <line x1="880" y1="95" x2="940" y2="95" stroke="#8B847A" marker-end="url(#ah)"/>
+        <!-- answer -->
+        <rect x="950" y="55" width="140" height="80" rx="12" fill="#1B1916" stroke="#FF5631"/>
+        <text x="964" y="85" fill="#F4F1EA" font-family="IBM Plex Sans" font-size="13">"$84.30, from</text><text x="964" y="104" fill="#F4F1EA" font-family="IBM Plex Sans" font-size="13">AMZ-55821."</text>
+        <text x="950" y="45">your answer</text>
+      </g>
+    </svg>
+  </div>
+  <div class="stat-row reveal">
+    <div><span class="mono">AI steps</span><b>1</b><span class="tag">reading the PDF</span></div>
+    <div><span class="mono">Questions tested</span><b>100/100</b><span class="tag">run it yourself: selftest.py</span></div>
+    <div><span class="mono">Rebuild 5,000 invoices</span><b>0.3s</b><span class="tag">measured</span></div>
+    <div><span class="mono">Document types</span><b>4</b><span class="tag">invoice · PO · payment · contract</span></div>
+  </div>
+</div></header>
+
+<!-- 00 STEP 1 -->
+<section id="start"><div class="shell">
+  <span class="eyebrow hot">00 — step 1, every session</span>
+  <h2>One command tells the agent what to do next.</h2>
+  <p class="lede">Every session starts the same way: Claude runs <code>python _system/start.py</code>. It prints whose books these are, what state they're in, and <em>one</em> next step. Claude does that step, runs it again, and repeats until it says <b style="color:var(--cream)">Ready</b>. You just say <em>"get started."</em> Click through a first session.</p>
+  <div class="startgrid">
+    <div>
+      <div class="ladder" id="ladder"></div>
+      <div class="row" style="margin-top:14px"><button class="btn" id="sPrev">← Back</button><button class="btn primary" id="sNext">Do the step ↗</button></div>
+      <div class="hand" style="margin-top:14px" id="shand"></div>
+    </div>
+    <div class="term"><div class="bar2"><i></i><i></i><i></i><span class="mono" style="margin-left:8px">python _system/start.py</span></div><pre id="sterm"></pre></div>
+  </div>
+</div></section>
+
+<!-- 01 JOURNEY -->
+<section id="journey" class="deep"><div class="shell">
+  <span class="eyebrow">01 — follow one invoice</span>
+  <h2>The life of an Amazon receipt.</h2>
+  <p class="lede">Step through what happens when one messy receipt lands in the inbox. Watch the record change at each stage. The tags show who does each step: <span class="who ai">AI</span> <span class="who script">script</span> <span class="who you">you</span></p>
+  <div class="sim">
+    <div class="stages" id="stageList"></div>
+    <div class="stagebox">
+      <div class="head"><h3 id="stTitle"></h3><span class="mono" id="stCount"></span></div>
+      <div class="stageview" id="stView"></div>
+      <div class="stagenav">
+        <button class="btn" id="stPrev">← Back</button>
+        <button class="btn primary" id="stNext">Next step ↗</button>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 02 DOCUMENT TYPES -->
+<section id="types"><div class="shell">
+  <span class="eyebrow">02 — four document types</span>
+  <h2>Every document checks the others.</h2>
+  <p class="lede">Invoices were only the start. Purchase orders say what was <em>ordered</em>, invoices say what was <em>billed</em>, payments say what was <em>paid</em>, and contracts say what was <em>agreed</em>. Put them side by side and the mismatches show up on their own.</p>
+  <div class="dtabs" id="dtabs"></div>
+  <div class="dtype" id="dtype"></div>
+
+  <svg class="linkmap" id="linkmap" viewBox="0 0 900 300" role="img" aria-label="How the four document types link together">
+    <defs><marker id="ah2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
+    <g font-family="IBM Plex Sans" font-size="14">
+      <rect x="40" y="24" width="820" height="56" rx="12" fill="#08070A" stroke="#E8D49A" stroke-dasharray="5 4"/>
+      <text x="450" y="48" text-anchor="middle" fill="#F4F1EA" font-family="Archivo" font-weight="700" font-size="17">Contract · what was agreed</text>
+      <text x="450" y="68" text-anchor="middle" fill="#8B847A" font-family="IBM Plex Mono" font-size="11">rates · term · renewal · notice period · value cap</text>
+      <g class="lk" data-l="contract"><line x1="450" y1="80" x2="450" y2="150" stroke="#3A3630" stroke-width="2" marker-end="url(#ah2)"/><rect x="420" y="100" width="60" height="26" rx="6" fill="#1B1916" stroke="#3A3630"/><text x="450" y="118" text-anchor="middle" fill="#E8D49A" font-family="IBM Plex Mono" font-size="11">checks</text></g>
+      <rect x="40" y="160" width="220" height="100" rx="12" fill="#1B1916" stroke="#3A3630"/>
+      <text x="150" y="200" text-anchor="middle" fill="#F4F1EA" font-family="Archivo" font-weight="700" font-size="17">Purchase order</text>
+      <text x="150" y="222" text-anchor="middle" fill="#8B847A" font-family="IBM Plex Mono" font-size="11">what was ordered</text>
+      <rect x="340" y="160" width="220" height="100" rx="12" fill="#1B1916" stroke="#9FB0FF"/>
+      <text x="450" y="200" text-anchor="middle" fill="#F4F1EA" font-family="Archivo" font-weight="700" font-size="17">Invoice</text>
+      <text x="450" y="222" text-anchor="middle" fill="#8B847A" font-family="IBM Plex Mono" font-size="11">what was billed</text>
+      <rect x="640" y="160" width="220" height="100" rx="12" fill="#1B1916" stroke="#3A3630"/>
+      <text x="750" y="200" text-anchor="middle" fill="#F4F1EA" font-family="Archivo" font-weight="700" font-size="17">Payment</text>
+      <text x="750" y="222" text-anchor="middle" fill="#8B847A" font-family="IBM Plex Mono" font-size="11">what was paid</text>
+      <g class="lk" data-l="po"><line x1="338" y1="210" x2="262" y2="210" stroke="#3A3630" stroke-width="2" marker-end="url(#ah2)"/><rect x="270" y="223" width="60" height="26" rx="6" fill="#1B1916" stroke="#3A3630"/><text x="300" y="241" text-anchor="middle" fill="#E8D49A" font-family="IBM Plex Mono" font-size="11">po_no</text></g>
+      <g class="lk" data-l="pay"><line x1="638" y1="210" x2="562" y2="210" stroke="#3A3630" stroke-width="2" marker-end="url(#ah2)"/><rect x="570" y="223" width="60" height="26" rx="6" fill="#1B1916" stroke="#3A3630"/><text x="600" y="241" text-anchor="middle" fill="#E8D49A" font-family="IBM Plex Mono" font-size="11">pays</text></g>
+    </g>
+  </svg>
+  <div class="card" style="margin-top:12px" id="linkinfo"><span class="mono">click a link in the map: po_no, pays, or checks</span></div>
+
+  <h3 style="margin-top:48px">Break something. Watch the report catch it.</h3>
+  <p class="explain">Every rebuild writes <code>03_data/exceptions.md</code>. Flip a problem on and see what lands in it. Exceptions are reported, never silently fixed.</p>
+  <div class="scen">
+    <div class="card" id="scenlist"></div>
+    <div class="md" id="exout" style="min-height:240px"></div>
+  </div>
+</div></section>
+
+<!-- 02 FOLDERS -->
+<section id="folders"><div class="shell">
+  <span class="eyebrow">03 — the folders are the system</span>
+  <h2>Every folder has one job.</h2>
+  <p class="lede">There's no app to learn. Each folder holds one kind of thing and carries a <code>CONTEXT.md</code> that tells the agent what to do there. Click a folder.</p>
+  <div class="folders">
+    <div class="tree" id="tree"></div>
+    <div class="card fdetail" id="fdetail"></div>
+  </div>
+</div></section>
+
+<!-- 03 CLEANUP -->
+<section id="clean" class="deep"><div class="shell">
+  <span class="eyebrow">04 — standardization playground</span>
+  <h2>Messy names in. One name out.</h2>
+  <div class="two" style="margin-top:28px">
+    <div class="card matcher">
+      <span class="eyebrow">Type a vendor name the way it's printed</span>
+      <input id="vin" value="ACME Bkpg" autocomplete="off" spellcheck="false" aria-label="Vendor name as printed">
+      <div class="row" style="margin-top:10px" id="vsuggest"></div>
+      <div class="meter" aria-hidden="true"><i id="vbar"></i><span class="thr"></span></div>
+      <div class="row" style="justify-content:space-between"><span class="mono">confidence</span><span class="mono">review line · 0.80</span></div>
+      <div class="result" id="vres"></div>
+      <div class="verdict" id="vverdict"></div>
+    </div>
+    <div class="card">
+      <span class="eyebrow">_shared/vendors.md · your approved list</span>
+      <div class="vlist" id="vlist"></div>
+      <p class="explain" style="margin-top:16px">The cleanup can only pick from <b>your</b> list. It can't invent a new spelling, which is what makes the names consistent. When a name doesn't match, it gets flagged instead of guessed.</p>
+      <div class="hand" style="margin-top:8px">add a spelling once, it's fixed forever.</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 04 REVIEW -->
+<section id="review"><div class="shell">
+  <span class="eyebrow hot">05 — the human gate</span>
+  <h2>A flag just went up. What do you do?</h2>
+  <p class="lede">The Amazon receipt was flagged: <code>"Dental chair cushion"</code> didn't match any account. It's held out of the database until a person clears it. Pick a fix.</p>
+  <div class="choices" id="choices">
+    <button class="choice" data-c="a"><span class="mono">option a</span><b>Add "cushion" to Office Supplies in the chart of accounts</b>Then re-run standardize.</button>
+    <button class="choice" data-c="b"><span class="mono">option b</span><b>Add <code>approved_by_human: true</code> to the record</b>Then re-run standardize.</button>
+    <button class="choice" data-c="c"><span class="mono">option c</span><b>Change <code>needs_review</code> to <code>false</code> by hand</b>Quick and done?</button>
+  </div>
+  <div class="feedback" id="fb"><span class="mono">pick an option above</span></div>
+</div></section>
+
+<!-- 05 ASK -->
+<section id="ask" class="deep"><div class="shell">
+  <span class="eyebrow">06 — ask questions</span>
+  <h2>Two views of the same records.</h2>
+  <p class="lede">The <b style="color:var(--cream)">database</b> does the math. The <b style="color:var(--cream)">graph</b> follows connections. The agent picks the right one for each question and always cites invoice numbers.</p>
+  <div class="qchips" id="qchips"></div>
+  <div class="answer">
+    <div class="card"><div class="route" id="qroute"></div><span class="eyebrow">what the agent runs</span><div class="md" id="qcode">Pick a question above.</div></div>
+    <div class="card"><span class="eyebrow">what you get back</span><p id="qans" style="color:var(--cream);font-size:1.1rem;margin:0"></p></div>
+  </div>
+  <div class="graphwrap">
+    <div>
+      <svg class="graph" id="graph" viewBox="0 -10 760 430" role="img" aria-label="Knowledge graph of the sample invoices"></svg>
+      <div class="legend">
+        <span><i style="background:#E8D49A"></i>vendor</span><span><i style="background:#F4F1EA"></i>client</span><span><i style="background:#9FB0FF"></i>invoice / PO</span><span><i style="background:#C9C2B6"></i>payment</span><span><i style="background:#FF5631"></i>contract</span><span><i style="background:#3A3630;border:1px solid #8B847A"></i>line item</span><span><i style="background:#7FB77E"></i>GL account</span>
+      </div>
+    </div>
+    <div class="card"><span class="eyebrow">click a node in the graph</span><h3 id="gname">Monthly bookkeeping</h3><div class="edgelist" id="gedges"></div><p class="explain" style="margin-top:12px">Invoice nodes are named <code>Vendor/Number</code>, so two vendors can both use "1001" without getting mixed up.</p></div>
+  </div>
+</div></section>
+
+<!-- 06 GUARDS -->
+<section id="guards"><div class="shell">
+  <span class="eyebrow">07 — guardrails</span>
+  <h2>Six things it refuses to do.</h2>
+  <div class="grid" style="grid-template-columns:repeat(2,1fr);margin-top:28px" id="guardgrid">
+    <div class="cell">
+      <span class="eyebrow">duplicate invoices</span><h3>The same bill twice? Refused.</h3>
+      <p class="explain">Each invoice is unique by vendor + number. A resent copy never double-counts.</p>
+      <div class="row" style="margin-top:10px"><button class="btn" id="dupBtn">Load a resent copy of INV-1001</button></div>
+      <div class="md" id="dupOut" style="margin-top:12px">invoices in database: 1</div>
+    </div>
+    <div class="cell">
+      <span class="eyebrow">history</span><h3>Closed periods stay closed.</h3>
+      <p class="explain">You change the chart of accounts so "payroll" points at 6500. What happens to last month's Acme invoice?</p>
+      <div class="toggle" role="group" aria-label="Run mode"><button class="on" data-m="normal">normal run</button><button data-m="all">run with --all</button></div>
+      <div class="md" id="histOut" style="margin-top:12px"></div>
+    </div>
+    <div class="cell">
+      <span class="eyebrow">math check</span><h3>Totals that don't add up get flagged.</h3>
+      <p class="explain">Drag the printed total. If the line items don't sum to it, the invoice is held for review.</p>
+      <input type="range" id="tot" min="1400" max="1500" step="10" value="1450" style="width:100%;accent-color:#FF5631" aria-label="Printed total">
+      <div class="md" id="totOut" style="margin-top:8px"></div>
+    </div>
+    <div class="cell">
+      <span class="eyebrow">wrong client</span><h3>Another client's bill? Held.</h3>
+      <p class="explain">One workspace holds one client's books. A document addressed to anyone else is held for review instead of loaded, so a mis-pointed folder can't mix two clients' books.</p>
+      <div class="md">LAW-0042.md
+<span class="bad">⚑ addressed to 'Oak Street Law', but this workspace is Riverside Dental</span></div>
+    </div>
+    <div class="cell">
+      <span class="eyebrow">originals win</span><h3>A resent copy never replaces the original.</h3>
+      <p class="explain">When the same bill shows up twice, the original file is kept and the copy is refused, and both names are reported.</p>
+      <div class="md">Duplicates refused: 1
+  - INV-1001: kept INV-1001.md, refused INV-1001-copy.md</div>
+    </div>
+    <div class="cell">
+      <span class="eyebrow">the client's files</span><h3>Read-only. Always.</h3>
+      <p class="explain">Point it at an existing SharePoint folder and it only <b>reads</b>. It never moves, renames, or edits their filing system. Each record points back to its original file.</p>
+      <div class="md">source_file: 2026/Amazon/amazon-order.pdf
+<span class="good">✓ original untouched</span></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 07 INSTALL -->
+<section id="install" class="deep"><div class="shell">
+  <span class="eyebrow">08 — install it</span>
+  <h2>Up and running in about 5 minutes.</h2>
+  <p class="lede">Tick each step as you go. Nothing extra to install beyond Python and Claude.</p>
+  <div class="steps" id="steps">
+    <div class="step"><button class="check" aria-label="Mark step 1 done"></button><div><span class="mono">step 01</span><h3>Check Python 3</h3><p class="explain">Open PowerShell (Windows) or Terminal (Mac) and run:</p><div class="cmd"><span>python --version</span><button>copy</button></div><p class="explain">Any 3.x works. The scripts use only what ships with Python.</p></div></div>
+    <div class="step"><button class="check" aria-label="Mark step 2 done"></button><div><span class="mono">step 02</span><h3>Unzip the workspace</h3><p class="explain">Put <code>invoice-intel</code> somewhere <b>local</b>, like Documents. Don't put the workspace itself inside SharePoint.</p></div></div>
+    <div class="step"><button class="check" aria-label="Mark step 3 done"></button><div><span class="mono">step 03</span><h3>Open it in Claude Code</h3><p class="explain">From the Claude desktop app, open the folder. Or from a terminal:</p><div class="cmd"><span>cd Documents\invoice-intel</span><button>copy</button></div><div class="cmd"><span>claude</span><button>copy</button></div><p class="explain">Say <em>"get started."</em> Claude runs <code>start.py</code> first, asks whose books these are, and walks you through every step from there.</p></div></div>
+    <div class="step"><button class="check" aria-label="Mark step 4 done"></button><div><span class="mono">step 04</span><h3>Load the client's lists</h3><p class="explain">Replace the samples in <code>_shared/</code> with the client's real vendors and chart of accounts. Plain tables, edit in any text editor.</p></div></div>
+    <div class="step"><button class="check" aria-label="Mark step 5 done"></button><div><span class="mono">step 05 · optional</span><h3>Connect a SharePoint folder</h3><p class="explain">Sync the library, right-click it, choose <b>Always keep on this device</b>, then paste its path into <code>_shared/settings.md</code>:</p><div class="cmd"><span>inbox_path: C:\Users\Jane\Riverside Dental\Invoices - Documents</span><button>copy</button></div></div></div>
+    <div class="step"><button class="check" aria-label="Mark step 6 done"></button><div><span class="mono">step 06</span><h3>Run one month first</h3><p class="explain">Tell Claude <em>"process the inbox"</em> on a month of documents. Check the accuracy before you run years of history. Use the strongest model for contracts, and a person confirms every one.</p></div></div>
+  </div>
+  <div class="bar"><i id="ibar"></i></div>
+  <p class="mono" id="itext" style="margin-top:8px">0 of 6 done</p>
+</div></section>
+
+<!-- 08 PRIVACY -->
+<section id="privacy"><div class="shell">
+  <span class="eyebrow">09 — privacy</span>
+  <h2>Pick the plan. See what it's safe for.</h2>
+  <p class="lede">The files stay on the computer, but the AI reads invoice content on Anthropic's servers. Which Claude plan the client uses decides what data is allowed in.</p>
+  <div class="plans" id="plans"></div>
+  <div class="useg" id="useg"></div>
+  <p class="explain" id="pnote" style="margin-top:14px"></p>
+  <p class="tag" style="margin-top:10px">Based on Anthropic's published terms as of October 2026. Not legal advice; have the client's counsel or privacy officer approve regulated setups.</p>
+</div></section>
+
+<!-- 09 QUIZ -->
+<section id="quiz" class="deep"><div class="shell">
+  <span class="eyebrow">10 — check yourself</span>
+  <h2>Nine questions. No pressure.</h2>
+  <div class="card quiz" style="margin-top:28px;max-width:760px" id="quizbox"></div>
+</div></section>
+
+<!-- CHEAT -->
+<section><div class="shell">
+  <span class="eyebrow">— cheat sheet</span>
+  <h2>What to say to Claude.</h2>
+  <div class="say">
+    <div><span class="mono">every session</span><q>Get started.</q><p class="explain">Runs start.py: the client, the state, and the one next step.</p></div>
+    <div><span class="mono">daily</span><q>Process the inbox.</q><p class="explain">Extracts new documents, cleans them, lists anything flagged.</p></div>
+    <div><span class="mono">after fixing a list</span><q>Re-run standardize.</q><p class="explain">Clears flags your fix resolved. History stays put.</p></div>
+    <div><span class="mono">anytime</span><q>What's the status?</q><p class="explain">What's unprocessed, what's waiting on review, what's loaded.</p></div>
+    <div><span class="mono">numbers</span><q>What did we spend on software in Q3?</q><p class="explain">Answered from the database, with invoice numbers.</p></div>
+    <div><span class="mono">connections</span><q>Which vendors bill us for bookkeeping?</q><p class="explain">Answered from the graph.</p></div>
+    <div><span class="mono">payables</span><q>What's still open with Acme?</q><p class="explain">Paid, partial, open, overpaid, from payments applied to invoices.</p></div>
+    <div><span class="mono">contracts</span><q>What renews in the next 90 days?</q><p class="explain">Notice deadlines, with the clause cited.</p></div>
+    <div><span class="mono">exceptions</span><q>What doesn't line up?</q><p class="explain">Over-billed POs, rates above contract, overpayments.</p></div>
+    <div><span class="mono">deliberately, before close</span><q>Re-code everything with --all.</q><p class="explain">The only way history changes.</p></div>
+  </div>
+</div></section>
+
+<footer><div class="shell row" style="justify-content:space-between">
+  <span class="wm">Intelligence Solved<span>.</span></span>
+  <span class="mono">Document intelligence layer · field guide · v3</span>
+</div></footer>
+<div class="toast" id="toast">copied</div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),1400)};
+
+/* progress + nav highlight + reveal */
+const secs=$$('section[id]');
+addEventListener('scroll',()=>{
+  const h=document.documentElement;$('#prog').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+  let cur='';secs.forEach(s=>{if(s.getBoundingClientRect().top<120)cur=s.id});
+  $$('nav a.n').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+cur));
+},{passive:true});
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.15});
+$$('.reveal').forEach(el=>io.observe(el));
+
+
+/* ---------- 00 STEP 1 SIMULATOR ---------- */
+const OK='<span class="ok">OK </span>',MISS='<span class="miss">MISSING</span>';
+const term=(client,setup,state,next)=>`<span class="hd">============================================================
+CLIENT: ${client}
+============================================================</span>
+
+Setup
+  ${setup[0]?OK:MISS} client name ................ ${setup[0]?client:'not set'}
+  ${OK} vendor list ................ 6 vendors
+  ${OK} chart of accounts .......... 9 accounts
+  ${OK} inbox ...................... C:\\Users\\Jane\\Riverside Dental\\Invoices
+
+State
+  new documents in inbox ...... ${state[0]}
+  records not yet standardized  ${state[1]}
+  flagged, waiting on a person  ${state[2]}
+  database up to date ......... ${state[3]}
+  matching exceptions ......... ${state[4]}
+
+<span class="hd">NEXT STEP</span>
+<span class="nx">${next}</span>`;
+const ST=[
+ {l:'Name the client',h:'brand-new workspace: it asks whose books these are.',t:term('(not set)',[0],[3,0,0,'yes',0],`  Ask the user: "Which client's books are these?" Then run:
+    python _system/start.py --client "&lt;name they confirm&gt;"`)},
+ {l:'Extract new documents',h:'three PDFs waiting. Claude reads each one.',t:term('Riverside Dental',[1],[3,0,0,'yes',0],`  Extract 3 new document(s). Follow 02_extracted/CONTEXT.md:
+    - 2026/Acme/acme-sept.pdf
+    - 2026/Amazon/amazon-order.pdf
+    - 2026/Oak Street Law/qb-invoice.pdf
+  Then run: standardize.py && rebuild.py && start.py`)},
+ {l:'Standardize + rebuild',h:'the scripts clean names, code lines, run the checks.',t:term('Riverside Dental',[1],[0,3,0,'no',0],`  Run: python _system/standardize.py && python _system/rebuild.py
+       && python _system/start.py`)},
+ {l:'You review the flags',h:'one was addressed to a different client. Held, not loaded.',t:term('Riverside Dental',[1],[0,0,1,'yes',1],`  Show the user what's flagged and why. They decide:
+    - LAW-0042.md: addressed to 'Oak Street Law', but this
+      workspace is Riverside Dental
+  After they fix it, run: standardize.py && rebuild.py && start.py`)},
+ {l:'Ready for questions',h:'that\'s the loop. drop, start, follow, ask.',t:term('Riverside Dental',[1],[0,0,0,'yes',1],`  Ready. Ask the user what they'd like to know about Riverside Dental's books.
+  Mention first: 1 matching exception(s) in 03_data/exceptions.md.`)}];
+let si=0;
+function sRender(){$('#ladder').innerHTML=ST.map((x,i)=>`<div class="${i<si?'done':i===si?'on':''}" data-i="${i}"><b>${i<si?'✓':'0'+(i+1)}</b>${x.l}</div>`).join('');
+  $('#sterm').innerHTML=ST[si].t;$('#shand').textContent=ST[si].h;$('#sPrev').disabled=si===0;$('#sNext').textContent=si===ST.length-1?'Start over ↺':'Do the step ↗'}
+$('#sNext').onclick=()=>{si=si===ST.length-1?0:si+1;sRender()};$('#sPrev').onclick=()=>{if(si>0){si--;sRender()}};
+$('#ladder').addEventListener('click',e=>{const d=e.target.closest('[data-i]');if(d){si=+d.dataset.i;sRender()}});sRender();
+
+/* ---------- 01 JOURNEY ---------- */
+const paper=(extra='')=>`<div class="paper"><span class="stamp">RECEIPT</span><h4>AMZN Mktp US</h4><div>Order AMZ-55821 · Sep 22, 2026</div><div>Ship to: Riverside Dental</div>
+<table><tr><th>Item</th><th>Qty</th><th>Amt</th></tr><tr><td>Copy paper 10 ream case</td><td>1</td><td>54.30</td></tr><tr><td>Dental chair cushion</td><td>1</td><td>30.00</td></tr><tr><th>Total</th><th></th><th>84.30</th></tr></table>
+<div style="margin-top:8px;font-size:.72rem;color:#5E5749">Thank you for your purchase.</div>${extra}</div>`;
+const rec=(o)=>`<div class="md"><span class="k">---</span>
+<span class="k">invoice_no:</span> AMZ-55821
+<span class="k">vendor_raw:</span> AMZN Mktp US
+<span class="k">client:</span> Riverside Dental
+<span class="k">total:</span> 84.30${o.std?`
+<span class="new"><span class="k">vendor:</span> Amazon</span>
+<span class="new"><span class="k">doc_type:</span> receipt</span>
+${o.ok?'<span class="good">needs_review: false</span>':'<span class="bad">needs_review: true</span>\n<span class="bad">review_reason: low-confidence match</span>'}`:''}
+<span class="k">---</span>
+| description | amount |${o.std?' gl_account |':''}
+| Copy paper 10 ream case | 54.30 |${o.std?' <span class="new">6400 Office Supplies</span> |':''}
+| Dental chair cushion | 30.00 |${o.std?(o.ok?' <span class="good">6400 Office Supplies</span> |':' <span class="bad">9999 Uncategorized</span> |'):''}</div>`;
+const STAGES=[
+ {t:'Drop it in the inbox',w:'you',s:'01_inbox',v:()=>`<div>${paper()}</div><div class="explain"><p><b>You drop the PDF</b> into <code>01_inbox</code>, or it's already sitting in the client's SharePoint folder.</p><p>Notice the mess: the vendor is printed as <code>AMZN Mktp US</code>, and one item is a dental chair cushion. Real invoices look like this.</p><div class="hand">nothing has happened yet.</div></div>`},
+ {t:'The agent extracts it',w:'ai',s:'02_extracted',v:()=>`<div>${rec({})}</div><div class="explain"><p><b>Claude reads the PDF</b> and fills in the template: one markdown file per invoice.</p><p>It copies the vendor name <b>exactly as printed</b>. Cleaning names up is not its job. This is the only step that uses AI.</p></div>`},
+ {t:'The script standardizes it',w:'script',s:'standardize.py',v:()=>`<div>${rec({std:1})}</div><div class="explain"><p><b><code>standardize.py</code></b> checks your approved lists:</p><p><code>AMZN Mktp US</code> → <b>Amazon</b>. Copy paper → <b>6400 Office Supplies</b>. Line items add up to 84.30 ✓.</p><p>But "cushion" matches no account, so it's coded <b>9999</b> and the record is <span style="color:var(--accent)">flagged</span>. It doesn't guess.</p></div>`},
+ {t:'You clear the flag',w:'you',s:'review',v:()=>`<div>${rec({std:1,ok:1})}</div><div class="explain"><p><b>You add "cushion"</b> as a keyword on 6400 in <code>_shared/chart-of-accounts.md</code>, then say <em>"re-run standardize."</em></p><p>The flag clears, and <b>every future cushion invoice</b> is coded correctly too. You fixed the rule, not just this one record.</p><div class="hand">fix the list, not the record.</div></div>`},
+ {t:'The script rebuilds',w:'script',s:'rebuild.py',v:()=>`<div><span class="eyebrow">03_data/invoices.db</span><table class="mini-db"><tr><th>vendor</th><th>invoice_no</th><th>doc_type</th><th>total</th></tr><tr><td>Acme Bookkeeping</td><td>INV-1001</td><td>invoice</td><td>1450.00</td></tr><tr class="newrow"><td>Amazon</td><td>AMZ-55821</td><td>receipt</td><td>84.30</td></tr></table><span class="eyebrow" style="margin-top:16px">04_graph/triples.csv · new edges</span><div class="md">Amazon <span class="new">billed</span> Riverside Dental
+Amazon/AMZ-55821 <span class="new">includes</span> Copy paper 10 ream case
+Copy paper 10 ream case <span class="new">coded_to</span> 6400 Office Supplies</div></div><div class="explain"><p><b><code>rebuild.py</code></b> regenerates the database and graph from every approved record in a fraction of a second.</p><p>They're rebuilt from scratch every time, so they <b>always agree</b>. You can delete them anytime and lose nothing.</p></div>`},
+ {t:'You ask a question',w:'you',s:'answer',v:()=>`<div class="card" style="background:var(--ink)"><span class="eyebrow">you</span><p style="color:var(--cream);font-size:1.1rem;margin:0">What did we spend on office supplies in September?</p><span class="eyebrow" style="margin-top:18px">claude</span><p id="typed" style="color:var(--cream);margin:0" class="typing"></p></div><div class="explain"><p>The agent sees a <b>numbers</b> question, so it queries the database, groups by the clean vendor name, and cites the invoice behind the answer.</p><p>That's the whole loop. <b>Drop, extract, clean, review, rebuild, ask.</b></p></div>`,after:()=>typeIt('#typed','$84.30, all from Amazon (receipt AMZ-55821): copy paper $54.30 and a chair cushion $30.00.')}
+];
+let st=0;
+function typeIt(sel,txt){const el=$(sel);if(!el)return;let i=0;el.textContent='';const go=()=>{if(!document.body.contains(el))return;el.textContent=txt.slice(0,++i);if(i<txt.length)setTimeout(go,18);else el.classList.remove('typing')};go()}
+function renderStages(){
+  $('#stageList').innerHTML=STAGES.map((s,i)=>`<div class="stage ${i===st?'on':''} ${i<st?'done':''}" data-i="${i}" tabindex="0" role="button"><span class="num">0${i+1}</span><div><b>${s.t}<span class="who ${s.w}">${s.w==='ai'?'AI':s.w}</span></b><small>${s.s}</small></div></div>`).join('');
+  const s=STAGES[st];$('#stTitle').textContent=s.t+'.';$('#stCount').textContent=`step ${st+1} of ${STAGES.length}`;
+  const v=$('#stView');v.style.opacity=0;setTimeout(()=>{v.innerHTML=s.v();v.style.transition='opacity .32s cubic-bezier(.2,0,.2,1)';v.style.opacity=1;s.after&&s.after()},120);
+  $('#stPrev').disabled=st===0;$('#stNext').textContent=st===STAGES.length-1?'Start over ↺':'Next step ↗';
+}
+$('#stageList').addEventListener('click',e=>{const d=e.target.closest('.stage');if(d){st=+d.dataset.i;renderStages()}});
+$('#stageList').addEventListener('keydown',e=>{if(e.key==='Enter'){const d=e.target.closest('.stage');if(d){st=+d.dataset.i;renderStages()}}});
+$('#stNext').onclick=()=>{st=st===STAGES.length-1?0:st+1;renderStages()};
+$('#stPrev').onclick=()=>{if(st>0){st--;renderStages()}};
+renderStages();
+
+
+/* ---------- 02 DOCUMENT TYPES ---------- */
+const DT={
+ invoice:{n:'Invoice',s:'what was billed',file:'INV-1001.md',tpl:'invoice.md',model:'Claude Sonnet 5.5 (Haiku 4.5 once proven)',
+  rec:`record_type: invoice
+invoice_no: INV-1001
+vendor_raw: ACME Bookkeeping LLC
+date: 2026-09-15
+total: 1450.00
+<span class="new">po_no: PO-5001</span>
+---
+| description | qty | unit_price | amount | gl_account |
+| Monthly bookkeeping | 1 | 950.00 | 950.00 | 6100 |
+| Payroll processing  | 2 | 250.00 | 500.00 | 6150 |`,
+  chk:['Vendor matched to your approved list','Every line coded to a GL account','Line items add up to the total','Billed against a PO that exists, and not over it','Priced at or below the contract rate']},
+ po:{n:'Purchase order',s:'what was ordered',file:'PO-5001.md',tpl:'purchase_order.md',model:'Claude Sonnet 5.5',
+  rec:`record_type: purchase_order
+po_no: PO-5001
+vendor_raw: Acme Bookkeeping Services
+client: Riverside Dental
+date: 2026-09-01
+total: 1450.00
+---
+| description | qty | unit_price | amount | gl_account |
+| Monthly bookkeeping | 1 | 950.00 | 950.00 | 6100 |
+| Payroll processing  | 2 | 250.00 | 500.00 | 6150 |`,
+  chk:['Vendor matched','Lines coded and add up to the total','Every invoice citing it is totaled against it','Over-billing is reported, even across several invoices']},
+ pay:{n:'Payment',s:'what was paid',file:'PMT-ACH-0930.md',tpl:'payment.md',model:'Claude Sonnet 5.5',
+  rec:`record_type: payment
+payment_id: ACH-0930
+vendor_raw: ACME BOOKKEEPING LLC
+date: 2026-09-30
+amount: 950.00
+method: ACH
+---
+| invoice_no | amount_applied |
+| INV-1001   | 950.00         |`,
+  chk:['One payment can cover several invoices','The split must add up to the payment amount','Applied to an invoice that exists','Updates each invoice: open, partial, paid, or overpaid','The same payment twice is refused']},
+ ctr:{n:'Contract',s:'what was agreed',file:'CTR-ACME-2026-BOOKKEEPING.md',tpl:'contract.md',model:'Claude Opus 5.5, always',
+  rec:`record_type: contract
+contract_id: ACME-2026-BOOKKEEPING
+end_date: 2026-12-31
+auto_renew: yes
+notice_days: 60
+---
+| term        | value                         | section |
+| termination | 60 days written notice        | §8.2    |
+| renewal     | auto-renews 12 months         | §2.1    |
+
+| description        | unit_price | unit  |
+| Payroll processing | 225.00     | run   |`,
+  chk:['<b style="color:var(--accent)">Always held for a person</b> to confirm against the signed copy','Clauses quoted word for word, with the section','Notice deadline worked out: end date minus notice days','Invoices checked against contract rates, term, and value cap']}
+};
+let dsel='invoice';
+$('#dtabs').innerHTML=Object.entries(DT).map(([k,d])=>`<button data-k="${k}"><b>${d.n}</b>${d.s}</button>`).join('');
+function dtype(k){dsel=k;$$('#dtabs button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));const d=DT[k];
+  $('#dtype').innerHTML=`<div><span class="eyebrow">02_extracted/${d.file}</span><div class="md">${d.rec}</div></div>
+  <div class="card"><span class="eyebrow">template · _templates/${d.tpl}</span><h3>What gets checked</h3><ul class="checks">${d.chk.map(c=>`<li>${c}</li>`).join('')}</ul>
+  <div class="facts" style="grid-template-columns:1fr"><div><span class="mono">model for the first run</span><b>${d.model}</b></div></div></div>`}
+$('#dtabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)dtype(b.dataset.k)});dtype('invoice');
+
+const LINKS={
+ po:'<span class="mono">invoice → purchase order</span><h3 style="margin-top:6px">Billed vs. ordered.</h3><p class="explain">The invoice records the PO number printed on it. The system totals every invoice against that PO and reports <b>over-billing</b>, or an invoice citing a PO that isn\'t on file.</p>',
+ pay:'<span class="mono">payment → invoice</span><h3 style="margin-top:6px">Paid vs. billed.</h3><p class="explain">Each payment lists which invoices it covers. That feeds <code>invoice_balances</code>, so every invoice reads <b>open, partial, paid, or overpaid</b>. INV-1001 shows $950 paid and $500 still open.</p>',
+ contract:'<span class="mono">contract → invoices</span><h3 style="margin-top:6px">Billed vs. agreed.</h3><p class="explain">Any invoice from the same vendor dated inside the contract term is checked against it: <b>rate above the contract</b>, <b>billing outside the term</b>, and <b>spend over the contract value</b>. Plus the renewal alert, before the notice window closes.</p>'};
+$('#linkmap').addEventListener('click',e=>{const g=e.target.closest('.lk');if(!g)return;$$('#linkmap .lk').forEach(x=>x.classList.toggle('on',x===g));$('#linkinfo').innerHTML=LINKS[g.dataset.l]});
+
+const SC=[
+ ['over','Bill twice against one PO','A second $1,450 invoice cites PO-5001.','Over-billed: Acme Bookkeeping PO PO-5001 is for 1450.00, but invoices INV-1001, INV-1002 total 2900.00.'],
+ ['nopo','Cite a PO that doesn\'t exist','An invoice prints PO-9999.','Invoice Acme Bookkeeping INV-1003 references PO PO-9999, which isn\'t loaded (missing, or still in review).'],
+ ['overpay','Overpay an invoice','A $1,600 payment on a $1,450 invoice.','Overpaid: Acme Bookkeeping INV-1003 is for 1450.00, but 1600.00 has been applied.'],
+ ['rate','Bill above the contract rate','Payroll billed at $250; the contract says $225.','Above contract rate: Acme Bookkeeping INV-1001 bills \'Payroll processing\' at 250.00; contract ACME-2026-BOOKKEEPING says 225.00.'],
+ ['late','Bill after the contract ended','An invoice dated February 2027.','Outside contract: Acme Bookkeeping INV-1101 is dated 2027-02-15, outside every contract term on file for Acme Bookkeeping.'],
+ ['dead','Notice window closing','The contract auto-renews; notice is due in 60 days before it ends.',null]];
+$('#scenlist').innerHTML=SC.map(([k,t,d])=>`<label class="sw"><input type="checkbox" data-k="${k}" ${k==='rate'||k==='dead'?'checked':''}><span><b>${t}</b><small>${d}</small></span></label>`).join('');
+function exr(){const on=new Set($$('#scenlist input:checked').map(i=>i.dataset.k));const X=SC.filter(x=>x[3]&&on.has(x[0])).map(x=>x[3]);
+  $('#exout').innerHTML=`<span class="k"># Exceptions</span>
+
+${X.length?X.map(x=>`<span class="bad">- ${x}</span>`).join('\n'):'<span class="good">None. Everything matches.</span>'}
+
+<span class="k">## Contract deadlines (next 90 days)</span>
+
+${on.has('dead')?'<span class="new">- 2026-11-01 (27 days): last day to give notice on Acme Bookkeeping\n  ACME-2026-BOOKKEEPING, or it auto-renews for 12 months on 2026-12-31.</span>':'None.'}`}
+$('#scenlist').addEventListener('change',exr);exr();
+
+/* ---------- 02 FOLDERS ---------- */
+const ico=c=>`<svg class="ico" viewBox="0 0 18 14"><path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h4l2 2h7A1.5 1.5 0 0 1 17 4.5v7A1.5 1.5 0 0 1 15.5 13h-13A1.5 1.5 0 0 1 1 11.5z" fill="none" stroke="${c}" stroke-width="1.2"/></svg>`;
+const fico=`<svg class="ico" viewBox="0 0 18 14"><path d="M4 1h7l3 3v9H4z" fill="none" stroke="#8B847A" stroke-width="1.2"/></svg>`;
+const FOLDERS=[
+ {g:'Start here'},
+ {n:'CLAUDE.md',file:1,k:'gen',kl:'routing',d:'The front door. When Claude opens the workspace it reads this first: where everything lives and where to go for each task. It holds no rules itself. It points.',r:'—',w:'you (rarely)',o:'—'},
+ {n:'CONTEXT.md',file:1,k:'gen',kl:'routing',d:'The whole pipeline on one screen: stages, inputs, outputs, the fixed schema, and what "done" means.',r:'—',w:'you (rarely)',o:'—'},
+ {g:'The pipeline'},
+ {n:'01_inbox/',c:'#C9C2B6',k:'product',kl:'product',d:'Where invoices come from. Either PDFs dropped here, or wherever inbox_path points, like a synced SharePoint library. Never edited, renamed, or deleted.',r:'nothing',w:'you / the client',o:'raw PDFs'},
+ {n:'02_extracted/',c:'#9FB0FF',k:'product',kl:'product · source of truth',d:'One markdown record per document: invoices, POs, payments, and contracts. This is the only real data in the system. Everything else is rebuilt from these files.',r:'inbox PDFs + template + master lists',w:'agent, then standardize.py',o:'INV-1001.md, PO-5001.md, PMT-ACH-0930.md, CTR-…'},
+ {n:'03_data/',c:'#7FB77E',k:'gen',kl:'generated',d:'invoices.db, the relational database: invoices, POs, payments, and contracts, each keyed by vendor + number, plus a live view of what is paid and open. Also exceptions.md, the report of anything that doesn\'t line up. Never hand-edited.',r:'approved records',w:'rebuild.py',o:'invoices.db, exceptions.md'},
+ {n:'04_graph/',c:'#7FB77E',k:'gen',kl:'generated',d:'triples.csv, the knowledge graph. Subject → relation → object, with a count. Used for "who is connected to what" questions.',r:'approved records',w:'rebuild.py',o:'triples.csv'},
+ {g:'The factory (set up once)'},
+ {n:'_shared/',c:'#E8D49A',k:'factory',kl:'factory · you own it',d:'Your approved names: vendors (with every spelling seen), chart of accounts (with keywords), document types, and settings, including whose books this workspace holds. The agent reads these but never edits them.',r:'—',w:'you, the bookkeeper',o:'vendors.md, chart-of-accounts.md…'},
+ {n:'_templates/',c:'#E8D49A',k:'factory',kl:'factory',d:'One record format per document type. Every record starts as a copy, which is why the scripts can always read them.',r:'—',w:'you (rarely)',o:'invoice.md, purchase_order.md, payment.md, contract.md'},
+ {n:'_system/',c:'#E8D49A',k:'factory',kl:'factory · no AI inside',d:'The scripts, no AI inside. start.py is step 1 of every session. inbox.py finds new documents, standardize.py cleans and codes, rebuild.py builds the database and graph, graph.py answers how things relate, q.py runs a query, and selftest.py checks 100 accountant questions.',r:'—',w:'—',o:'start.py, standardize.py, rebuild.py, graph.py, selftest.py…'}
+];
+let fsel=5;
+function renderFolders(){
+  $('#tree').innerHTML=FOLDERS.map((f,i)=>f.g?`<div class="grp">${f.g}</div>`:`<button class="${i===fsel?'on':''}" data-i="${i}">${f.file?fico:ico(f.c)}${f.n}</button>`).join('');
+  const f=FOLDERS[fsel];
+  $('#fdetail').innerHTML=`<div class="row" style="justify-content:space-between"><h3 style="font-family:var(--mono);letter-spacing:0">${f.n}</h3><span class="badge ${f.k}">${f.kl}</span></div><p class="explain" style="margin-top:12px">${f.d}</p><div class="facts"><div><span class="mono">reads</span><b>${f.r}</b></div><div><span class="mono">written by</span><b>${f.w}</b></div><div><span class="mono">holds</span><b>${f.o}</b></div></div><p class="tag" style="margin-top:14px">factory = set up once, stable · product = new every run · generated = rebuilt by script</p>`;
+}
+$('#tree').addEventListener('click',e=>{const b=e.target.closest('button');if(b){fsel=+b.dataset.i;renderFolders()}});
+renderFolders();
+
+/* ---------- 03 MATCHER ---------- */
+const VENDORS={'Acme Bookkeeping':['acme bookkeeping llc','acme bkpg','acme bookkeeping services'],'Amazon':['amzn mktp us','amazon.com','amazon marketplace'],'Amazon Web Services':['aws','amazon web services inc'],'Intuit':['quickbooks','intuit inc','qbo']};
+function sim(a,b){ // bigram similarity, close to the script's fuzzy ratio
+  if(a===b)return 1;if(a.length<2||b.length<2)return 0;
+  const bg=s=>{const m=new Map();for(let i=0;i<s.length-1;i++){const k=s.slice(i,i+2);m.set(k,(m.get(k)||0)+1)}return m};
+  const A=bg(a),B=bg(b);let n=0;A.forEach((v,k)=>{if(B.has(k))n+=Math.min(v,B.get(k))});return 2*n/(a.length+b.length-2);
+}
+function match(t){t=t.toLowerCase().trim();let best=null,sc=0;for(const[v,al]of Object.entries(VENDORS)){for(const k of[v.toLowerCase(),...al]){const s=k===t?1:(k&&t&&t.includes(k))?.95:sim(k,t);if(s>sc){sc=s;best=v}}}return[best,Math.round(sc*100)/100]}
+$('#vlist').innerHTML=Object.entries(VENDORS).map(([v,a])=>`<div><span style="color:var(--cream)">${v}</span><span class="al">${a.join('; ')}</span></div>`).join('');
+$('#vsuggest').innerHTML=['AMZN Mktp US','Acme Bookkeeping Svcs','QBO','Amazon Web Svcs','Bob\'s Plumbing'].map(s=>`<button class="chip" style="cursor:pointer">${s}</button>`).join('');
+$('#vsuggest').addEventListener('click',e=>{if(e.target.matches('button')){$('#vin').value=e.target.textContent;runMatch()}});
+function runMatch(){const v=$('#vin').value;if(!v.trim()){$('#vres').textContent='';$('#vverdict').textContent='';$('#vbar').style.width=0;return}
+  const[b,s]=match(v);const ok=s>=.8;$('#vbar').style.width=(s*100)+'%';$('#vbar').style.background=ok?'var(--ok)':'var(--accent)';
+  $('#vres').textContent=ok?b:'UNMATCHED';$('#vverdict').innerHTML=ok?`<span class="yes">✓ confidence ${s.toFixed(2)} · standardized to "${b}"</span>`:`<span class="no">⚑ confidence ${s.toFixed(2)} · flagged for review</span> <span style="color:var(--low)">(closest: ${b})</span>`;}
+$('#vin').addEventListener('input',runMatch);runMatch();
+
+/* ---------- 04 REVIEW ---------- */
+const FB={a:['right','Best move.','You fixed the rule. The flag clears, and every future cushion invoice is coded to 6400 automatically. The system gets smarter with each fix.'],
+b:['ok','Works, for this one.','The record is cleared and protected from future re-runs. Good for true one-offs. But the next cushion invoice will be flagged again, because the list never learned.'],
+c:['wrong','Trap.','The next standardize run recalculates the flag and puts it right back. Hand-edits to needs_review get overwritten. Use approved_by_human instead.']};
+$('#choices').addEventListener('click',e=>{const b=e.target.closest('.choice');if(!b)return;$$('.choice').forEach(c=>c.className='choice');const[k,h,t]=FB[b.dataset.c];b.classList.add(k);
+  $('#fb').innerHTML=`<b style="color:${k==='right'?'var(--ok)':k==='ok'?'var(--warm)':'var(--accent)'};font-family:var(--brand);font-size:1.2rem">${h}</b><p class="explain" style="margin:6px 0 0">${t}</p>`});
+
+/* ---------- 05 ASK + GRAPH ---------- */
+const QS=[
+ {q:'What did we spend on office supplies?',r:'db',code:`SELECT i.vendor, SUM(l.amount)
+FROM invoices i JOIN line_items l
+  ON i.vendor = l.vendor AND i.invoice_no = l.invoice_no
+WHERE l.gl_account LIKE '6400%'
+GROUP BY i.vendor;`,a:'$84.30, all from Amazon (AMZ-55821).'},
+ {q:'How does riverside detal relate to acme?',r:'graph',code:`python _system/graph.py "riverside detal" "acme"
+
+"riverside detal" -> Riverside Dental     (typo handled)
+"acme" -> Acme Bookkeeping
+
+Direct links:
+  Acme Bookkeeping --billed--> Riverside Dental
+  Riverside Dental --paid--> Acme Bookkeeping
+  Riverside Dental --ordered_from--> Acme Bookkeeping
+Shared documents:
+  Acme Bookkeeping/PO-5001: ordered_by Riverside Dental
+  Acme Bookkeeping/INV-1001: billed_to Riverside Dental`,a:'Acme is Riverside\'s bookkeeper: Riverside ordered on PO-5001, Acme billed INV-1001 ($1,450) against it, and Riverside paid $950 by ACH, leaving $500 open.',hl:'Riverside Dental'},
+ {q:'What\'s overdue?',r:'db',code:`SELECT invoice_no, due_date, days_past_due, open_balance
+FROM ap_aging WHERE days_past_due > 0;
+
+INV-1001 | 2026-09-30 | 5 | 500.00`,a:'One: INV-1001 from Acme, $500, 5 days past due (as of Oct 5).',hl:'Acme Bookkeeping/INV-1001'},
+ {q:'What did Acme bill us for?',r:'md',code:`open 02_extracted/INV-1001.md
+
+| Monthly bookkeeping | 950.00 | 6100 |
+| Payroll processing  | 500.00 | 6150 |`,a:'INV-1001, $1,450: monthly bookkeeping ($950) and payroll processing, 2 runs at $250 ($500).',hl:'Acme Bookkeeping/INV-1001'},
+ {q:'What do we still owe Acme?',r:'db',code:`SELECT invoice_no, total, paid, open_balance, status
+FROM invoice_balances
+WHERE vendor = 'Acme Bookkeeping';
+
+INV-1001 | 1450.00 | 950.00 | 500.00 | partial`,a:'$500 on INV-1001. $950 was paid by ACH-0930 on Sept 30; the rest is open.',hl:'Acme Bookkeeping/INV-1001'},
+ {q:'When do we have to decide on the Acme contract?',r:'db',code:`SELECT contract_id, end_date, notice_days, notice_deadline
+FROM contracts WHERE vendor = 'Acme Bookkeeping';
+
+ACME-2026-BOOKKEEPING | 2026-12-31 | 60 | 2026-11-01`,a:'By Nov 1, 2026. After that it auto-renews for 12 months (§2.1). Note: INV-1001 bills payroll at $250 vs the contract\'s $225 (§ rates).',hl:'Acme Bookkeeping/ACME-2026-BOOKKEEPING'},
+ {q:'How many invoices are waiting on review?',r:'script',code:`python _system/rebuild.py
+
+Not extracted yet: 0
+Waiting on review (not in database): 0
+Rebuilt: 2 invoices, 18 unique edges`,a:'None. Both sample invoices are cleared and loaded.'}
+];
+$('#qchips').innerHTML=QS.map((q,i)=>`<button data-i="${i}">${q.q}</button>`).join('');
+const RL={db:'database',graph:'graph',md:'markdown record',script:'status script'};
+function ask(i){const q=QS[i];$$('#qchips button').forEach((b,j)=>b.classList.toggle('on',j===i));
+  $('#qroute').innerHTML=Object.entries(RL).map(([k,v])=>`<span class="r ${k===q.r?'on':''}">${v}</span>`).join('');
+  $('#qcode').textContent=q.code;$('#qans').className='typing';typeIt('#qans',q.a);if(q.hl)selectNode(q.hl)}
+$('#qchips').addEventListener('click',e=>{const b=e.target.closest('button');if(b)ask(+b.dataset.i)});
+$('#qroute').innerHTML=Object.values(RL).map(v=>`<span class="r">${v}</span>`).join('');
+
+const N={ 'Acme Bookkeeping':[110,70,'v'],'Amazon':[110,330,'v'],'Riverside Dental':[110,200,'c'],
+ 'Acme Bookkeeping/PO-5001':[620,225,'i'],'Acme Bookkeeping/ACH-0930':[420,175,'p'],'Acme Bookkeeping/ACME-2026-BOOKKEEPING':[330,15,'k'],
+ 'Acme Bookkeeping/INV-1001':[330,70,'i'],'Amazon/AMZ-55821':[330,330,'i'],
+ 'Monthly bookkeeping':[530,30,'l'],'Payroll processing':[530,130,'l'],'Copy paper 10 ream case':[530,290,'l'],'Dental chair cushion':[530,380,'l'],
+ '6100 Accounting':[680,30,'g'],'6150 Payroll':[680,130,'g'],'6400 Office Supplies':[680,335,'g']};
+const E=[['Acme Bookkeeping/INV-1001','bills_against','Acme Bookkeeping/PO-5001'],['Acme Bookkeeping/ACH-0930','pays','Acme Bookkeeping/INV-1001'],['Acme Bookkeeping/INV-1001','under_contract','Acme Bookkeeping/ACME-2026-BOOKKEEPING'],['Acme Bookkeeping/ACME-2026-BOOKKEEPING','sets_rate_for','Payroll processing'],['Riverside Dental','has_contract','Acme Bookkeeping/ACME-2026-BOOKKEEPING'],['Acme Bookkeeping','billed','Riverside Dental'],['Amazon','billed','Riverside Dental'],['Acme Bookkeeping','issued','Acme Bookkeeping/INV-1001'],['Amazon','issued','Amazon/AMZ-55821'],
+ ['Acme Bookkeeping/INV-1001','billed_to','Riverside Dental'],['Amazon/AMZ-55821','billed_to','Riverside Dental'],
+ ['Acme Bookkeeping/INV-1001','includes','Monthly bookkeeping'],['Acme Bookkeeping/INV-1001','includes','Payroll processing'],['Amazon/AMZ-55821','includes','Copy paper 10 ream case'],['Amazon/AMZ-55821','includes','Dental chair cushion'],
+ ['Monthly bookkeeping','coded_to','6100 Accounting'],['Payroll processing','coded_to','6150 Payroll'],['Copy paper 10 ream case','coded_to','6400 Office Supplies'],['Dental chair cushion','coded_to','6400 Office Supplies']];
+const COL={v:['#E8D49A','#0F0E0C'],c:['#F4F1EA','#0F0E0C'],i:['#9FB0FF','#0F0E0C'],p:['#C9C2B6','#0F0E0C'],k:['#FF5631','#F4F1EA'],l:['#1B1916','#F4F1EA'],g:['#7FB77E','#0F0E0C']};
+function drawGraph(){const w=k=>Math.max(80,k.length*6.6+20);let s='';
+  E.forEach((e,i)=>{const[a,b]=[N[e[0]],N[e[2]]];s+=`<line class="edge" data-i="${i}" x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}"/>`});
+  for(const[k,[x,y,t]]of Object.entries(N)){const ww=w(k.length>28?k.slice(0,26)+'…':k);const lbl=k.length>28?k.slice(0,26)+'…':k;
+    s+=`<g class="node" data-k="${k}" tabindex="0"><rect x="${x-ww/2}" y="${y-14}" width="${ww}" height="28" rx="6" fill="${COL[t][0]}" stroke="${t==='l'?'#8B847A':COL[t][0]}"/><text x="${x}" y="${y+4}" text-anchor="middle" fill="${COL[t][1]}">${lbl}</text></g>`}
+  $('#graph').innerHTML=s;}
+function selectNode(k){$$('#graph .node').forEach(n=>{n.classList.toggle('sel',n.dataset.k===k)});
+  const rel=E.map((e,i)=>[e,i]).filter(([e])=>e[0]===k||e[2]===k);const near=new Set([k]);rel.forEach(([e])=>{near.add(e[0]);near.add(e[2])});
+  $$('#graph .edge').forEach(l=>{const on=rel.some(([,i])=>i==l.dataset.i);l.classList.toggle('hl',on);l.classList.toggle('dim',!on)});
+  $$('#graph .node').forEach(n=>n.classList.toggle('dim',!near.has(n.dataset.k)));
+  $('#gname').textContent=k;$('#gedges').innerHTML=rel.map(([e])=>`${e[0]===k?'→':'←'} <span class="rel">${e[1]}</span> ${e[0]===k?e[2]:e[0]}`).join('<br>');}
+drawGraph();selectNode('Riverside Dental');
+$('#graph').addEventListener('click',e=>{const g=e.target.closest('.node');if(g)selectNode(g.dataset.k)});
+$('#graph').addEventListener('keydown',e=>{if(e.key==='Enter'){const g=e.target.closest('.node');if(g)selectNode(g.dataset.k)}});
+
+/* ---------- 06 GUARDS ---------- */
+let dupN=0;$('#dupBtn').onclick=()=>{dupN++;$('#dupOut').innerHTML=`invoices in database: 1
+<span class="bad">Duplicates refused: ${dupN}</span>
+  - Acme Bookkeeping INV-1001: kept INV-1001.md, refused INV-1001-resent${dupN>1?'-'+dupN:''}.md`};
+const HIST={normal:`$ python _system/standardize.py
+Left unchanged (already settled): 1
+
+INV-1001  Payroll processing → <span class="good">6150 Payroll Services</span>
+<span class="good">✓ last month's books didn't move</span>`,all:`$ python _system/standardize.py --all
+INV-1001: re-coded
+
+INV-1001  Payroll processing → <span class="bad">6500 Professional Services</span>
+<span class="bad">⚑ history changed, on purpose. Do this only before close.</span>`};
+const hist=m=>{$('#histOut').innerHTML=HIST[m];$$('.toggle button').forEach(b=>b.classList.toggle('on',b.dataset.m===m))};
+$$('.toggle button').forEach(b=>b.onclick=()=>hist(b.dataset.m));hist('normal');
+const tot=()=>{const v=+$('#tot').value;const ok=v===1450;$('#totOut').innerHTML=`printed total: ${v.toFixed(2)}   line items: 1450.00
+${ok?'<span class="good">✓ adds up · loads into the database</span>':`<span class="bad">⚑ off by ${(v-1450).toFixed(2)} · held for review</span>`}`};
+$('#tot').oninput=tot;tot();
+
+/* ---------- 07 INSTALL ---------- */
+function upd(){const d=$$('.step.done').length,n=$$('.step').length;$('#ibar').style.width=(d/n*100)+'%';$('#itext').textContent=d===n?'All set. Drop an invoice in and say "process the inbox."':`${d} of ${n} done`}
+$('#steps').addEventListener('click',e=>{const c=e.target.closest('.check');if(c){const s=c.closest('.step');s.classList.toggle('done');c.textContent=s.classList.contains('done')?'✓':'';upd()}
+  const cp=e.target.closest('.cmd button');if(cp){const t=cp.previousElementSibling.textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('copied'),()=>toast('select and copy manually'))}});
+
+/* ---------- 08 PRIVACY ---------- */
+const PLANS={
+ 'Free / Pro / Max':{v:['no','no','maybe'],n:'Personal plans. Training depends on a setting the user controls, and if it\'s on, data can be kept 5 years. No BAA is available. Keep regulated and confidential client data out.'},
+ 'Team':{v:['no','maybe','yes'],n:'Business terms: no training, 30-day retention. Fine for ordinary business data. Not covered by Anthropic\'s BAA, so no patient information.'},
+ 'API':{v:['maybe','yes','yes'],n:'Commercial terms: no training, 30-day retention. A BAA is available, but Claude Code is only covered with zero data retention, in local sessions.'},
+ 'Enterprise + ZDR + BAA':{v:['yes','yes','yes'],n:'The regulated setup: signed BAA, zero data retention, local Claude Code sessions only. Web, remote, Cowork, and beta features fall outside the BAA.'},
+ 'Local model (offline)':{v:['yes','yes','yes'],n:'Nothing leaves the building. Lower extraction accuracy, so check results closely. Good as a premium air-gapped tier.'}};
+const LBL={yes:'Yes',no:'No',maybe:'With care'};
+$('#plans').innerHTML=Object.keys(PLANS).map(p=>`<button>${p}</button>`).join('');
+function plan(p){$$('#plans button').forEach(b=>b.classList.toggle('on',b.textContent===p));const v=PLANS[p].v;
+  $('#useg').innerHTML=['Patient info (HIPAA)','Legal / confidential','Ordinary business data'].map((h,i)=>`<div><span class="mono">${h}</span><div class="v ${v[i]}">${LBL[v[i]]}</div></div>`).join('');$('#pnote').textContent=PLANS[p].n}
+$('#plans').addEventListener('click',e=>{if(e.target.matches('button'))plan(e.target.textContent)});plan('Team');
+
+/* ---------- 09 QUIZ ---------- */
+const QUIZ=[
+ ['What does the agent do first, every session?',['Reads every record in the workspace','Runs start.py and follows its one next step','Rebuilds the database'],1,'start.py prints the client, the state, and the next step. The agent never has to guess the workflow.'],
+ ['Which step uses AI?',['Extracting the invoice from the PDF','Standardizing vendor names','Rebuilding the database'],0,'Only extraction. The other steps are plain scripts, which is why they\'re fast and predictable.'],
+ ['Where does the real data live?',['In invoices.db','In the markdown records in 02_extracted','In triples.csv'],1,'The records are the source of truth. The database and graph are rebuilt from them.'],
+ ['A vendor name keeps getting flagged. Best fix?',['Edit needs_review to false','Add the spelling to _shared/vendors.md','Delete the record'],1,'Fix the list once and it never flags again.'],
+ ['You edit the chart of accounts. What happens to last year\'s invoices?',['They\'re recoded automatically','Nothing, unless you run --all','They get deleted'],1,'Settled records are protected. History changes only when you deliberately ask.'],
+ ['A new contract is extracted. When does it reach the database?',['Right away, if the vendor matches','Only after a person confirms it against the signed copy','After 60 days'],1,'Contracts are always held. A misread renewal clause costs too much to skip the check.'],
+ ['A payment is applied to an invoice that is still in review. What happens?',['The payment is rejected','It loads, and the exceptions report notes the missing invoice','The invoice is approved automatically'],1,'Exceptions are reported, never forced. It resolves itself once the invoice is cleared.'],
+ ['An invoice addressed to a different client lands in the inbox. What happens?',['It loads normally','It is held for review: wrong client','It is deleted'],1,'One workspace, one client. Anything addressed to someone else is held, so books never mix.'],
+ ['A dental client wants this. Which plan is never OK for patient data?',['Enterprise with a BAA and ZDR','A personal Pro account','A fully offline local model'],1,'Personal plans have no BAA. Patient information needs a covered setup.']];
+let qi=0,qs=0;
+function quiz(){const box=$('#quizbox');if(qi>=QUIZ.length){box.innerHTML=`<span class="eyebrow">result</span><div class="score">${qs}/${QUIZ.length}</div><p class="explain">${qs===QUIZ.length?'Perfect. You\'re ready to install it.':qs>=3?'Solid. Skim the sections you missed and you\'re set.':'Worth another lap through the journey in section 01.'}</p><button class="btn primary" id="qre">Try again ↺</button>`;$('#qre').onclick=()=>{qi=qs=0;quiz()};return}
+  const[q,o,a,why]=QUIZ[qi];box.innerHTML=`<span class="eyebrow">question 0${qi+1} of 0${QUIZ.length}</span><h3>${q}</h3><div class="opts">${o.map((x,i)=>`<button data-i="${i}">${x}</button>`).join('')}</div><p class="explain" id="why" style="min-height:2em;margin-top:12px"></p>`;
+  box.querySelector('.opts').onclick=e=>{const b=e.target.closest('button');if(!b||box.dataset.lock)return;box.dataset.lock=1;const i=+b.dataset.i;
+    box.querySelectorAll('.opts button')[a].classList.add('right');if(i!==a)b.classList.add('wrong');else qs++;
+    $('#why').innerHTML=(i===a?'<b class="yes">Right.</b> ':'<b class="no">Not quite.</b> ')+why;setTimeout(()=>{delete box.dataset.lock;qi++;quiz()},2200)}}
+quiz();
+</script>
+</body>
+</html>

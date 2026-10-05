@@ -1,0 +1,11 @@
+# generated: rebuilt from 02_extracted/ by _system/rebuild.py
+03_data/*.db
+03_data/*.db-journal
+03_data/exceptions.md
+04_graph/triples.csv
+__pycache__/
+*.pyc
+# never commit client documents
+01_inbox/*
+!01_inbox/CONTEXT.md
+!01_inbox/.gitkeep
