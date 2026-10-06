@@ -265,6 +265,11 @@ footer{padding:48px 0;color:var(--low);font-size:.85rem}
 .startgrid{display:grid;grid-template-columns:280px 1fr;gap:20px;margin-top:28px}
 @media(max-width:860px){.startgrid{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.reveal{opacity:1;transform:none}}
+.closebar{display:flex;gap:14px;align-items:center;margin-top:20px}.closebar .bar{flex:1}
+.cg{margin-top:18px}.cg .eyebrow{display:block;margin-bottom:2px}
+.qchips button.done::before{content:"✓ ";color:var(--ok)}
+.cfeed{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+@media(max-width:860px){.cfeed{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -278,10 +283,11 @@ footer{padding:48px 0;color:var(--low);font-size:.85rem}
   <a class="n" href="#clean">04 Cleanup</a>
   <a class="n" href="#review">05 Review</a>
   <a class="n" href="#ask">06 Ask</a>
-  <a class="n" href="#guards">07 Guardrails</a>
-  <a class="n" href="#install">08 Install</a>
-  <a class="n" href="#privacy">09 Privacy</a>
-  <a class="n" href="#quiz">10 Quiz</a>
+  <a class="n" href="#close">07 Close</a>
+  <a class="n" href="#guards">08 Guardrails</a>
+  <a class="n" href="#install">09 Install</a>
+  <a class="n" href="#privacy">10 Privacy</a>
+  <a class="n" href="#quiz">11 Quiz</a>
   <div class="progress" id="prog"></div>
 </div></nav>
 
@@ -469,9 +475,28 @@ footer{padding:48px 0;color:var(--low);font-size:.85rem}
   </div>
 </div></section>
 
+<!-- 07 CLOSE -->
+<section id="close"><div class="shell">
+  <span class="eyebrow">07 — close the month</span>
+  <h2>A controller's checklist, already run.</h2>
+  <p class="lede">Every rebuild also asks the questions a controller asks at month-end: <em>should</em> this have been paid, which period does it belong to, and does it tie to the bank? Click through the checklist. Each answer comes from the built-in test client.</p>
+  <div class="closebar"><div class="bar"><i id="cbar"></i></div><span class="mono" id="ccount">0 / 0 checked</span></div>
+  <div id="cgroups"></div>
+  <div class="answer">
+    <div class="card"><span class="eyebrow">what the agent runs</span><div class="md" id="ccode">Pick a check above.</div><p class="explain" id="cwhy" style="margin-top:12px"></p></div>
+    <div class="card"><span class="eyebrow">what you get back</span><p id="cans" style="color:var(--cream);font-size:1.1rem;margin:0"></p></div>
+  </div>
+  <h3 style="margin-top:48px">Three new things to feed it</h3>
+  <div class="cfeed">
+    <div class="card"><span class="chip">RCV-*.md</span><h3>Goods receipts</h3><p class="explain">Packing slips and receiving reports. They prove goods arrived, so a PO, a receipt and an invoice can be matched three ways.</p></div>
+    <div class="card"><span class="chip">BANK-*.csv</span><h3>Bank exports</h3><p class="explain">The statement as a CSV, with money out as negative numbers. Payments get matched to it: cleared, outstanding, stale or void.</p></div>
+    <div class="card"><span class="chip">_shared/*.md</span><h3>Four short lists</h3><p class="explain">Periods (open or closed), approval limits by role, budgets, and extra vendor columns for 1099s, W-9s and bank changes. You own them; the agent never edits them.</p></div>
+  </div>
+</div></section>
+
 <!-- 06 GUARDS -->
 <section id="guards"><div class="shell">
-  <span class="eyebrow">07 — guardrails</span>
+  <span class="eyebrow">08 — guardrails</span>
   <h2>Six things it refuses to do.</h2>
   <div class="grid" style="grid-template-columns:repeat(2,1fr);margin-top:28px" id="guardgrid">
     <div class="cell">
@@ -515,7 +540,7 @@ footer{padding:48px 0;color:var(--low);font-size:.85rem}
 
 <!-- 07 INSTALL -->
 <section id="install" class="deep"><div class="shell">
-  <span class="eyebrow">08 — install it</span>
+  <span class="eyebrow">09 — install it</span>
   <h2>Up and running in about 5 minutes.</h2>
   <p class="lede">Tick each step as you go. Nothing extra to install beyond Python and Claude.</p>
   <div class="steps" id="steps">
@@ -532,7 +557,7 @@ footer{padding:48px 0;color:var(--low);font-size:.85rem}
 
 <!-- 08 PRIVACY -->
 <section id="privacy"><div class="shell">
-  <span class="eyebrow">09 — privacy</span>
+  <span class="eyebrow">10 — privacy</span>
   <h2>Pick the plan. See what it's safe for.</h2>
   <p class="lede">The files stay on the computer, but the AI reads invoice content on Anthropic's servers. Which Claude plan the client uses decides what data is allowed in.</p>
   <div class="plans" id="plans"></div>
@@ -543,7 +568,7 @@ footer{padding:48px 0;color:var(--low);font-size:.85rem}
 
 <!-- 09 QUIZ -->
 <section id="quiz" class="deep"><div class="shell">
-  <span class="eyebrow">10 — check yourself</span>
+  <span class="eyebrow">11 — check yourself</span>
   <h2>Nine questions. No pressure.</h2>
   <div class="card quiz" style="margin-top:28px;max-width:760px" id="quizbox"></div>
 </div></section>
@@ -770,7 +795,7 @@ const FOLDERS=[
  {g:'The factory (set up once)'},
  {n:'_shared/',c:'#E8D49A',k:'factory',kl:'factory · you own it',d:'Your approved names: vendors (with every spelling seen), chart of accounts (with keywords), document types, and settings, including whose books this workspace holds. The agent reads these but never edits them.',r:'—',w:'you, the bookkeeper',o:'vendors.md, chart-of-accounts.md…'},
  {n:'_templates/',c:'#E8D49A',k:'factory',kl:'factory',d:'One record format per document type. Every record starts as a copy, which is why the scripts can always read them.',r:'—',w:'you (rarely)',o:'invoice.md, purchase_order.md, payment.md, contract.md'},
- {n:'_system/',c:'#E8D49A',k:'factory',kl:'factory · no AI inside',d:'The scripts, no AI inside. start.py is step 1 of every session. inbox.py finds new documents, standardize.py cleans and codes, rebuild.py builds the database and graph, graph.py answers how things relate, q.py runs a query, and selftest.py checks 100 accountant questions.',r:'—',w:'—',o:'start.py, standardize.py, rebuild.py, graph.py, selftest.py…'}
+ {n:'_system/',c:'#E8D49A',k:'factory',kl:'factory · no AI inside',d:'The scripts, no AI inside. start.py is step 1 of every session. inbox.py finds new documents, standardize.py cleans and codes, rebuild.py builds the database and graph, graph.py answers how things relate, q.py runs a query, and selftest.py checks 127 accountant questions.',r:'—',w:'—',o:'start.py, standardize.py, rebuild.py, graph.py, selftest.py…'}
 ];
 let fsel=5;
 function renderFolders(){
@@ -933,6 +958,32 @@ function quiz(){const box=$('#quizbox');if(qi>=QUIZ.length){box.innerHTML=`<span
     box.querySelectorAll('.opts button')[a].classList.add('right');if(i!==a)b.classList.add('wrong');else qs++;
     $('#why').innerHTML=(i===a?'<b class="yes">Right.</b> ':'<b class="no">Not quite.</b> ')+why;setTimeout(()=>{delete box.dataset.lock;qi++;quiz()},2200)}}
 quiz();
+
+// ---- 07 close checklist
+const CL=[
+["Close","What should we accrue?","SELECT kind, vendor, amount FROM accruals","Two kinds: goods received but not billed, and contract charges that should have arrived but didn't.","Accrue $4,800: Oak Street rent for August has no invoice ($4,000, from lease OAK-LEASE-2024), and $800 of goods arrived on a PO with no bill yet."],
+["Close","Anything posted into a closed period?","SELECT detail FROM exceptions WHERE kind='Closed period'","Periods come from _shared/periods.md. A record entered after its period closed is flagged.","PDS-3420 was entered on Oct 4 into September, which Jane Doe closed on Oct 3."],
+["Close","Any cutoff problems?","SELECT detail FROM exceptions WHERE kind='Cutoff'","Compares the service period to the posting period.","Intuit QB-77 is for service ending Aug 31 but is posted to September."],
+["Close","What's the prepaid schedule?","SELECT period, amount FROM prepaid_schedule","Lines coded to an account marked is_prepaid are spread over the service period.","Harbor Insurance HAR-2026: $2,400 spread as 12 × $200."],
+["Controls","Was everything billed actually received?","SELECT detail FROM exceptions WHERE kind='Not received'","The 3-way match: PO vs receipt vs invoice.","PO-7001: billed for 5 units of impression material, only 3 received."],
+["Controls","Who approved what, and were they allowed to?","SELECT number, approver, role FROM approvals","Approvals come only from the document or from you. The agent never invents one.","Sam Lee (staff, limit $500) approved RENT-1001 for $4,000 (over limit). Jane Doe extracted and approved PDS-3301 (segregation of duties)."],
+["Controls","Did any vendor change bank details?","SELECT detail FROM exceptions WHERE kind='Bank change'","Remit-to bank changes are the top AP fraud signal.","Pacific Dental Supply was paid by CHK-2002 on Oct 1, six days after its bank details changed. Confirm by phone."],
+["Controls","1099 totals and missing W-9s?","SELECT vendor, box_1099, w9_on_file, paid FROM vendor_1099","Built from the vendor list's 1099 columns plus payments.","Acme Bookkeeping $3,300 (NEC-1, W-9 on file). Oak Street $8,100 (MISC-1, no W-9 on file)."],
+["Cash","Which checks are outstanding?","SELECT payment_id, amount FROM outstanding_payments","Payments are matched to BANK-*.csv by reference, then by amount within 7 days.","CHK-2002 for $1,100 hasn't cleared. And a $35 bank fee on Oct 1 has no payment record."],
+["Cash","What credits are sitting unused?","SELECT reference, credit, kind FROM vendor_credits","Overpayments and credit memos not yet applied.","$100 overpaid on RENT-1001, and Pacific's $100 credit memo PDS-CM-3301."],
+["Cash","How much cash do we need?","SELECT week_start, SUM(amount) FROM cash_requirements GROUP BY 1","Open AP by due week plus contract charges coming due, over 8 weeks, in dollars.","$9,910 over the next 8 weeks, most of it in the week of Oct 26."],
+["Cash","Which early-pay discounts?","SELECT invoice_no, discount_amount, status FROM discounts","From terms like 2/10 net 30.","Missed $24 on PDS-3301. $6 still available on PDS-3420 until Oct 11."],
+["Reporting","Are we over budget?","SELECT * FROM budget_vs_actual","Budgets live in _shared/budgets.md, by period and GL account.","Account 5100 in September: $2,325 against an $1,800 budget ($525 over)."],
+["Reporting","What's the euro invoice in dollars?","SELECT invoice_no, functional_amount, tax_amount FROM invoices WHERE currency='EUR'","Foreign invoices convert with fx_rate. With no rate, they're held for review, never summed wrong.","NDA-77: €540 at 1.08 = $583.20 (incl. €40 VAT). NDA-78 is held: no fx_rate."],
+["Reporting","Are we billed above contract rates?","SELECT invoice_no, variance_total FROM contract_price_variance WHERE variance_total>0","Every invoice line compared with the contract's rate card.","INV-1001 payroll at $250 vs $225 (+$50). PDS-3301 gloves at $60 vs $55 (+$50)."],
+["Reporting","What isn't posted to the GL yet?","SELECT COUNT(*) FROM not_posted","Records carry erp_id and gl_status once they're in QuickBooks (or another system).","13 documents are indexed here but not yet posted. Only INV-0901 and INV-1001 are."]];
+const cseen=new Set();
+$('#cgroups').innerHTML=[...new Set(CL.map(c=>c[0]))].map(g=>`<div class="cg"><span class="eyebrow">${g}</span><div class="qchips">${CL.map((c,i)=>c[0]===g?`<button data-i="${i}">${c[1]}</button>`:'').join('')}</div></div>`).join('');
+function cshow(i){const c=CL[i];cseen.add(i);$$('#cgroups button').forEach(b=>{const j=+b.dataset.i;b.classList.toggle('on',j===i);b.classList.toggle('done',cseen.has(j))});
+ $('#ccode').textContent='python _system/q.py "'+c[2]+'"';$('#cwhy').textContent=c[3];$('#cans').textContent=c[4];
+ $('#cbar').style.width=(100*cseen.size/CL.length)+'%';$('#ccount').textContent=cseen.size===CL.length?'Month closed. Every check reviewed.':`${cseen.size} / ${CL.length} checked`}
+$('#cgroups').addEventListener('click',e=>{const b=e.target.closest('button');if(b)cshow(+b.dataset.i)});
+$('#ccount').textContent=`0 / ${CL.length} checked`;
 </script>
 </body>
 </html>
