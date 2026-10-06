@@ -7,7 +7,11 @@ date: 2026-01-31
 amount: 0.00
 method: check | ACH | wire | card
 currency: USD
+fx_rate:
+status:
 source_file: path/relative/to/inbox.pdf
+extracted_by: agent
+extracted_on: 2026-01-31
 ---
 # Payment
 
@@ -18,3 +22,8 @@ Which invoices this payment covers (from the remittance or memo). One row per in
 | invoice_no | amount_applied |
 |---|---|
 | INV-0000 | 0.00 |
+
+<!--
+- status: leave blank; write "void" only if the check or payment was voided.
+- currency / fx_rate: as on invoices.
+-->

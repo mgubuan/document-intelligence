@@ -10,3 +10,11 @@ To read a synced SharePoint/OneDrive library instead, paste its full path from F
 The workspace only ever READS this folder — it never moves, renames, or edits anything in it.
 
 inbox_path:
+
+Home currency. Documents in another currency need an fx_rate, or they are held for review.
+
+functional_currency: USD
+
+How many past months to check for missing recurring contract charges (accruals).
+
+accrual_lookback_months: 3

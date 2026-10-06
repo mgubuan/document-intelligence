@@ -3,6 +3,7 @@ Handles three record types (set by `record_type:` in each record; missing = invo
   invoice         -> clean vendor, doc_type, GL code per line, line items must sum to total
   purchase_order  -> clean vendor, GL code per line, line items must sum to total
   payment         -> clean vendor, applied amounts must sum to the payment amount
+  receipt         -> clean vendor (goods/services received against a PO; no amounts)
   contract        -> clean vendor, date/renewal sanity checks, and ALWAYS held for a person to confirm
                      the key terms against the signed contract (cleared only by approved_by_human: true)
 Fully offline: no AI, no network. Uncertain matches are flagged for a person, never guessed.
@@ -21,6 +22,7 @@ TYPES = {
     "invoice":        {"id": "invoice_no", "total": "total",  "gl": True,  "cols": 4, "amt": 3},
     "purchase_order": {"id": "po_no",      "total": "total",  "gl": True,  "cols": 4, "amt": 3},
     "payment":        {"id": "payment_id", "total": "amount", "gl": False, "cols": 2, "amt": 1},
+    "receipt":        {"id": "receipt_id",  "total": None,     "gl": False, "cols": 2, "amt": None},
     "contract":       {"id": "contract_id"},
 }
 
@@ -55,6 +57,8 @@ CLIENT = next((l.split(":", 1)[1].strip() for l in (ROOT / "_shared/settings.md"
 if not CLIENT:
     raise SystemExit('No client set for this workspace. Run: python _system/start.py --client "<client name>"')
 norm = lambda x: re.sub(r"[^a-z0-9]", "", (x or "").lower())
+FUNCTIONAL = next((l.split(":", 1)[1].strip() for l in (ROOT / "_shared/settings.md").read_text(encoding="utf-8").splitlines()
+                   if l.startswith("functional_currency:")), "") .upper() or "USD"
 
 def wrong_client(meta):
     c = meta.get("client", "")
@@ -116,8 +120,8 @@ for f in sorted((ROOT / "02_extracted").glob("*.md")):
     for l in body.splitlines():
         if l.startswith("|"):
             cells = [c.strip() for c in l.strip().strip("|").split("|")][:T["cols"]]
-            if n >= 2:  # data rows
-                try: item_sum += float(cells[T["amt"]])
+            if n >= 2 and T["amt"] is not None:  # data rows
+                try: item_sum += float(cells[T["amt"]].replace(",", ""))
                 except (ValueError, IndexError): pass
             if T["gl"]:
                 if n == 0: cells.append("gl_account")
@@ -133,12 +137,23 @@ for f in sorted((ROOT / "02_extracted").glob("*.md")):
     if v_conf < THRESHOLD:
         vendor = "UNMATCHED"
     issues = []
-    try:
-        if abs(item_sum - float(meta[T["total"]])) > 0.01:
-            what = "applied amounts" if rtype == "payment" else "line items"
-            issues.append(f"{what} sum to {item_sum:.2f}, {T['total']} says {meta[T['total']]}")
-    except (ValueError, KeyError):
-        issues.append(f"{T['total']} unreadable")
+    if T["total"]:
+        extras = 0.0  # tax and freight are part of an invoice total but not line items
+        for k in ("tax_amount", "freight"):
+            try: extras += float((meta.get(k) or "0").replace(",", "")) if rtype == "invoice" else 0
+            except ValueError: issues.append(f"{k} unreadable")
+        try:
+            if abs(item_sum + extras - float(meta[T["total"]].replace(",", ""))) > 0.01:
+                what = "applied amounts" if rtype == "payment" else "line items" + (" + tax + freight" if extras else "")
+                issues.append(f"{what} sum to {item_sum + extras:.2f}, {T['total']} says {meta[T['total']]}")
+        except (ValueError, KeyError):
+            issues.append(f"{T['total']} unreadable")
+        cur = (meta.get("currency") or FUNCTIONAL).upper()
+        if cur != FUNCTIONAL:
+            try:
+                if float(meta.get("fx_rate") or "x") <= 0: raise ValueError
+            except ValueError:
+                issues.append(f"in {cur} but no fx_rate to convert to {FUNCTIONAL}")
     if min(confs) < THRESHOLD:
         issues.append("low-confidence match")
     issues += wrong_client(meta)

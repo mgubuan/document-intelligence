@@ -1,0 +1,4 @@
+txn_id,account,date,amount,description,reference,source_file
+B1001,Operating,2026-10-01,-35.00,MONTHLY SERVICE FEE,,bank-oct.csv
+B1002,Operating,2026-10-02,-4100.00,CHECK 2003,2003,bank-oct.csv
+B1003,Operating,2026-10-03,-120.00,AMAZON.COM,,bank-oct.csv

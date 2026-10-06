@@ -4,7 +4,7 @@ Reads the inbox setting from _shared/settings.md; searches subfolders too."""
 import pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-INVOICE_TYPES = {".pdf", ".png", ".jpg", ".jpeg", ".tif", ".tiff", ".heic"}
+INVOICE_TYPES = {".pdf", ".png", ".jpg", ".jpeg", ".tif", ".tiff", ".heic", ".csv", ".xlsx"}  # csv/xlsx: bank exports
 
 def inbox_root():
     for line in (ROOT / "_shared/settings.md").read_text(encoding="utf-8").splitlines():
@@ -29,9 +29,13 @@ def key(source_file):
 def recorded():
     keys = set()
     for f in (ROOT / "02_extracted").glob("*.md"):
-        for line in f.read_text(encoding="utf-8").splitlines()[:20]:
+        for line in f.read_text(encoding="utf-8").splitlines()[:60]:
             if line.startswith("source_file:"):
                 keys.add(key(line.split(":", 1)[1]))
+    import csv  # bank statements: a source_file column names the export each line came from
+    for f in (ROOT / "02_extracted").glob("BANK-*.csv"):
+        for r in csv.DictReader(open(f, encoding="utf-8-sig")):
+            if (r.get("source_file") or "").strip(): keys.add(key(r["source_file"]))
     return keys
 
 def pending():

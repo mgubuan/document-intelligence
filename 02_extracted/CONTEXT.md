@@ -18,12 +18,19 @@ Do NOT load: other records, `03_data/`, `04_graph/`.
      Use the strongest model available for contracts. Read the whole document, including amendments and schedules.
      Quote the contract's own wording in Key terms and cite the section. Never infer a renewal or notice term that isn't written down — use `unknown` / blank.
      Write rate descriptions with the same wording the vendor's invoices use, so rates can be checked.
+   - packing slip, delivery note, receiving report (proof goods arrived) → `receipt.md` → save as `RCV-<receipt_id>.md`.
+     A store receipt for a purchase is an invoice, not this.
+   - bank statement export (.csv / .xlsx) → save as `BANK-<account>-<YYYY-MM>.csv` with columns
+     `txn_id,account,date,amount,description,reference,source_file`; money out is negative. Copy rows; never invent them.
    Fill it in from the document. Set `source_file` to the exact value `inbox.py` printed for it.
    Fill `client` with the name exactly as printed on the document. If it isn't this workspace's client, still record it: the script will hold it for review.
+   Set `extracted_by` (who's running this session) and `extracted_on` (today).
+   Fill approval, service period, tax, freight, currency, fx_rate and discount fields only if the document shows them.
+   Never invent an approval: `approved_by` is only filled from a stamp, signature, or approval the user gives you.
    Anything else (W-9, fixed-asset form, statement)? Skip it and tell the user. Those types aren't built yet.
 2. Write the vendor name EXACTLY as printed in `vendor_raw`. Never clean it up — that's the script's job.
 3. Unreadable field → `UNKNOWN`. Never guess a number.
-4. Run `python ../_system/standardize.py`. It adds the clean vendor, doc type, GL codes, a confidence score, and flags anything uncertain — including line items that don't add up to the total.
+4. Run `python ../_system/standardize.py`. It adds the clean vendor, doc type, GL codes, a confidence score, and flags anything uncertain — including line items (+ tax + freight) that don't add up to the total, and foreign-currency documents with no fx_rate.
 5. Run `python ../_system/rebuild.py`.
 
 ## Outputs

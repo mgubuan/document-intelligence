@@ -17,7 +17,7 @@ Before anything else, whatever the user asked. It prints whose books these are, 
 | Folder | What it holds |
 |---|---|
 | `01_inbox/` | raw invoices — or wherever `_shared/settings.md` points (e.g. SharePoint) |
-| `02_extracted/` | one markdown record per document (invoice, PO, payment, contract) — the source of truth |
+| `02_extracted/` | one markdown record per document (invoice, PO, receipt, payment, contract) + bank CSVs — the source of truth |
 | `03_data/` | invoices.db + exceptions.md — generated, never hand-edited |
 | `04_graph/` | triples.csv — generated, never hand-edited |
 | `_shared/` | factory: vendor list, chart of accounts, doc types (user-owned) |
@@ -35,6 +35,9 @@ Before anything else, whatever the user asked. It prints whose books these are, 
 | user asks how things relate ("how does X relate to Y", "who do we use for…") | run `python _system/graph.py "X" "Y"`, then add amounts from `03_data` | plain-English answer, documents cited |
 | asked for status | run `python _system/start.py` | report its state lines and any matching exceptions |
 | asked what's paid or open | `03_data/CONTEXT.md` (invoice_balances) | answer with invoice numbers cited |
+| asked about month-end: accruals, cutoff, closed periods, prepaids | `03_data/CONTEXT.md` (accruals, periods, prepaid_schedule) | answer with documents cited; list accruals as suggestions, not entries |
+| asked about bank rec, outstanding checks, cash needs, discounts | `03_data/CONTEXT.md` (payment_status, cash_requirements, discounts) | answer with payment / invoice numbers cited |
+| asked about approvals, 1099s, vendor bank changes, controls | `03_data/CONTEXT.md` (approvals, vendor_1099, exceptions) | answer with names and documents cited |
 | asked about renewals, notice dates, or contract terms | `03_data/CONTEXT.md` (contracts) | answer with the contract section cited |
 
 ## The one rule
