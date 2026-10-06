@@ -202,9 +202,9 @@ Q = [
  "SELECT number, kept_file, refused_file FROM refused_duplicates", ["INV-1001 | INV-1001.md | INV-1001-copy.md"]),
 ("Review", "Is there anything in the inbox we haven't processed?", INBOX, None, ["Pending: 1", "statement-sept.pdf"]),
 ("Review", "What exceptions are open?", SQL,
- "SELECT COUNT(*) FROM exceptions", ["16"]),
+ "SELECT COUNT(*) FROM exceptions", ["17"]),
 ("Review", "What's the status?", STATUS, None,
- ["CLIENT: Riverside Dental", "Not extracted yet: 1", "Waiting on review (not in database): 4", "Duplicates refused (already loaded): 1", "Matching exceptions: 16", "15 invoices, 3 purchase orders, 9 payments, 4 contracts, 2 receipts, 9 bank lines"]),
+ ["CLIENT: Riverside Dental", "Not extracted yet: 1", "Waiting on review (not in database): 4", "Duplicates refused (already loaded): 1", "Matching exceptions: 17", "15 invoices, 3 purchase orders, 9 payments, 4 contracts, 2 receipts, 9 bank lines"]),
 ("Review", "How many documents are loaded?", SQL,
  "SELECT record_type, COUNT(*) FROM records GROUP BY 1 ORDER BY 1",
  ["contract | 4", "invoice | 15", "payment | 9", "purchase_order | 3", "receipt | 2"]),
@@ -308,6 +308,18 @@ Q = [
 ("Budget", "What's the Nordic Dental invoice in dollars?", SQL,
  "SELECT invoice_no, functional_amount, tax_amount FROM invoices WHERE vendor='Nordic Dental'", ["NDA-77 | 583.2 | 40.0"]),
 ("Budget", "Why isn't NDA-78 loaded?", SQL, "SELECT reason FROM review_queue WHERE file='NDA-78.md'", ["no fx_rate"]),
+# Q. Graph: people, periods, bank, master data ----------------------------------------------------
+("Graph", "What did Jane Doe approve, extract or close?", GRAPH, ["Jane Doe"],
+ ["Jane Doe --approved--> Acme Bookkeeping/INV-1001", "Jane Doe --extracted--> Pacific Dental Supply/PDS-3301", "Jane Doe --closed--> 2026-09"]),
+("Graph", "What has Sam Lee approved?", GRAPH, ["sam lee"], ["Sam Lee --approved--> Oak Street Properties/RENT-1001", "--has_role--> staff"]),
+("Graph", "Do any vendors share a bank account?", GRAPH, ["pacific", "harbor"], ["bank account ••9034", "confirm both are real"]),
+("Graph", "Who remits to the account ending 9034?", GRAPH, ["bank account ••9034"], ["Pacific Dental Supply --remits_to-->", "Harbor Insurance --remits_to-->"]),
+("Graph", "Which invoice does credit memo PDS-CM-3301 credit?", GRAPH, ["PDS-CM-3301"], ["--credits--> Pacific Dental Supply/PDS-3301"]),
+("Graph", "Which bank line is CHK-2001?", GRAPH, ["CHK-2001"], ["--cleared_as--> bank txn B0901"]),
+("Graph", "Which invoices fall under the Oak lease?", GRAPH, ["OAK-LEASE-2024"], ["--covers--> Oak Street Properties/RENT-0901", "--covers--> Oak Street Properties/RENT-1001"]),
+("Graph", "What did the Clinical department buy?", GRAPH, ["Clinical"], ["Nordic Dental/NDA-77 --for_department--> Clinical"]),
+("Graph", "What's in the prepaid account?", GRAPH, ["1400 Prepaid Expenses"], ["--coded_to--> 1400 Prepaid Expenses", "--is_a--> prepaid"]),
+("Graph", "Which period is PDS-3420 posted in?", GRAPH, ["PDS-3420"], ["--posted_in--> 2026-09"]),
 ]
 
 # ---------------------------------------------------------------- run

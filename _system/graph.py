@@ -69,6 +69,16 @@ else:
     direct = [show(a, r, o, d, c) for r, o, d, c in adj[a] if o == b]
     print("Direct links:" if direct else "Direct links: none")
     for x in direct: print(f"  {x}")
+    # people, accounts, bank details, departments... that both sides link to (the client is shared by everyone, so skip it)
+    client = next((l.split(":", 1)[1].strip() for l in (ROOT / "_shared/settings.md").read_text(encoding="utf-8").splitlines()
+                   if l.startswith("client:")), "")
+    common = sorted({o for r, o, d, c in adj[a] if "/" not in o} & {o for r, o, d, c in adj[b] if "/" not in o} - {client})
+    if common:
+        print(f"\nShared links ({len(common)}):")
+        for o in common:
+            ra = ", ".join(sorted({r for r, x, d, c in adj[a] if x == o})); rb = ", ".join(sorted({r for r, x, d, c in adj[b] if x == o}))
+            warn = "   <- two vendors paid to one bank account: confirm both are real" if o.startswith("bank account") else ""
+            print(f"  {o}: {a} {ra} it | {b} {rb} it{warn}")
     # documents that touch both sides, with the labelled links on each side
     shared = []
     for doc in sorted({o for r, o, d, c in adj[a] if "/" in o}):
@@ -79,7 +89,7 @@ else:
             shared.append(f"  {doc}: {fmt(to_a, a)} | {fmt(to_b, b)}")
     print(f"\nShared documents ({len(shared)}):" if shared else "\nShared documents: none")
     for x in shared[:40]: print(x)
-    if not direct and not shared:  # only then fall back to longer chains
+    if not direct and not shared and not common:  # only then fall back to longer chains
         ps = [p for p in paths(a, b) if len(p) > 2]
         print(f"\nLonger chains ({len(ps)}):" if ps else "\nNo connection found within 3 steps.")
         for p in ps[:15]: print("  " + "  ->  ".join(p))

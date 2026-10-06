@@ -12,9 +12,9 @@ Local and folder-based. No app, no server, no database to install. One AI agent 
 - **Standardizes the mess.** "AMZN Mktp US", "Amazon.com", and "Amazon Marketplace" all become *Amazon*. Line items get GL codes from your chart of accounts. Anything uncertain is flagged for a person, never guessed.
 - **Links documents together.** Invoices to POs, payments to invoices, invoices to contracts.
 - **Catches problems.** Over-billed POs, rates above the contract, overpayments, duplicates, invoices outside a contract term, missed renewal notice windows, and documents addressed to the wrong client.
-- **Closes the month.** Goods receipts for a 3-way match, posting periods with closed-period and cutoff checks, accruals (received-not-invoiced and missing contract charges), prepaid schedules, approvals with limits and segregation-of-duties checks, a vendor master (1099s, W-9s, bank-change alerts), bank matching (cleared, outstanding, unrecorded), vendor credits, a cash forecast, budget vs actual, tax and FX, early-pay discounts, and what's posted to the GL.
+- **Closes the month.** Goods receipts for a 3-way match, posting periods with closed-period and cutoff checks, accruals (received-not-invoiced and missing contract charges), prepaid schedules, approvals with limits and segregation-of-duties checks, a vendor master (1099s, W-9s, bank-change and shared-bank-account alerts), bank matching (cleared, outstanding, unrecorded), vendor credits, a cash forecast, budget vs actual, tax and FX, early-pay discounts, and what's posted to the GL.
 - **Answers questions.** A SQLite database for the numbers (spend, aging, what's open) and a knowledge graph for relationships ("how does Riverside relate to Acme?").
-- **Tested.** `python _system/selftest.py` asks 127 common accountant questions of a built-in test client and checks every answer.
+- **Tested.** `python _system/selftest.py` asks 137 common accountant questions of a built-in test client and checks every answer.
 
 ## Install (about 5 minutes)
 
@@ -70,7 +70,7 @@ Files stay on your computer. When the agent reads a document, its content is sen
 
 ## For developers
 
-- `python _system/selftest.py` must stay at 127/127 (every question) after any change. Add failing real-world questions to its question bank.
+- `python _system/selftest.py` must stay at 137/137 (every question) after any change. Add failing real-world questions to its question bank.
 - `INTEL_AS_OF=YYYY-MM-DD` pins "today" for aging and deadlines.
 - `python _system/standardize.py --all` re-codes settled history (use only before a period is closed). Records with `approved_by_human: true` are never changed.
 

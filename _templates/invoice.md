@@ -14,6 +14,7 @@ freight:
 discount_pct:
 discount_days:
 po_no:
+applies_to:
 service_start:
 service_end:
 posting_period:
@@ -47,6 +48,7 @@ How to fill the optional fields (leave blank if the document doesn't say):
 - discount_pct / discount_days: early-pay terms, e.g. "2/10 net 30" -> 2 and 10.
 - service_start / service_end: the period the goods or services cover, if printed.
 - posting_period: YYYY-MM the person wants it booked to; blank = the invoice date's month.
+- applies_to: on a credit memo, the invoice number it credits (only if printed).
 - department / class / location / project / entity: reporting dimensions, if the client uses them.
 - extracted_by / extracted_on: who created this record and the date. Always fill these.
 - approved_by / approver_role / approved_at: only from a real approval (stamp, email, workflow). Never invent one.

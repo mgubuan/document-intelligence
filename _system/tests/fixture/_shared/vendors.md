@@ -8,5 +8,5 @@
 | Intuit | QuickBooks; Intuit Inc; QBO | Intuit Inc. | | no | no | | Card | 6300 | | | active |
 | Pacific Dental Supply | Pacific Dental Supply Co; PDS; Pacific Dental | Pacific Dental Supply Co. | 7710 | yes | no | | Net 30 | 5100 | 9034 | 2026-09-25 | active |
 | Oak Street Properties | Oak Street Properties LLC; Oak St Properties | Oak Street Properties LLC | 3302 | no | yes | MISC-1 | Due on the 1st | 6200 | 5521 | | active |
-| Harbor Insurance | Harbor Insurance Co; Harbor Mutual | Harbor Insurance Company | | yes | no | | Net 30 | 1400 | | | active |
+| Harbor Insurance | Harbor Insurance Co; Harbor Mutual | Harbor Insurance Company | | yes | no | | Net 30 | 1400 | 9034 | | active |
 | Nordic Dental | Nordic Dental AB | Nordic Dental AB | | no | no | | Net 30 | 5100 | | | active |

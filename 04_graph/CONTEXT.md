@@ -5,7 +5,7 @@
 ## How to query it
 Don't read the CSV by eye. Use the script — it handles typos, short names, and vendor aliases:
 - `python _system/graph.py "riverside" "acme"` → direct links between two things, plus every path through documents
-- `python _system/graph.py "acme"` → everything connected to one thing
+- `python _system/graph.py "acme"` → everything connected to one thing (also works for a person, a department, a GL account, or `bank account ••9034`)
 
 The first lines show which names it matched. If it says "low confidence", confirm with the user before answering.
 
@@ -14,7 +14,15 @@ Turn the links into a sentence, then add the numbers from `03_data` (totals, ope
 Example: "Acme Bookkeeping is Riverside Dental's bookkeeper. Riverside issued PO-5001 to Acme, Acme billed INV-1001 ($1,450) against it, and Riverside paid $950 by ACH on Sept 30, leaving $500 open."
 
 ## Relations
-billed, issued, billed_to, dated, includes, coded_to, is_a, bills_against (invoice → PO), ordered_by, ordered_from, paid, paid_to, pays (payment → invoice), contract_with, has_contract, sets_rate_for, ends, auto_renews, under_contract (invoice → contract).
+billed, issued, billed_to, dated, includes, coded_to, is_a, bills_against (invoice → PO), ordered_by, ordered_from, paid, paid_to, pays (payment → invoice), contract_with, has_contract, sets_rate_for, ends, auto_renews, under_contract (invoice → contract), covers (contract → invoice).
+Goods receipts: received_from, received_against (receipt → PO).
+People: approved, extracted, closed (person → period), has_role. Use these for "who approved / touched / closed…".
+Periods and reporting: posted_in (invoice → posting period), for_department / for_class / for_location / for_project / for_entity.
+Credits and bank: credits (credit memo → invoice), cleared_as (payment → bank txn), on_account (bank txn → account), remits_to (vendor → bank account ••last4).
+Master data: GL account is_a its type, and is_a prepaid when it is one.
+
+When two things are compared, "Shared links" lists the people, accounts and bank details both sides touch. Two vendors sharing a bank account is a fraud signal: always say so.
+The graph holds links only. Amounts, balances and statuses come from `03_data`.
 
 Document nodes are named `Vendor/Number` (e.g. `Acme Bookkeeping/INV-1001`, `Acme Bookkeeping/PO-5001`, `Acme Bookkeeping/ACH-0930`), matching the database keys.
 `count` = how many times that edge occurred — use it for "how often" questions.

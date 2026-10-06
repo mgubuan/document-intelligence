@@ -8,6 +8,7 @@ due_date:
 total: -100.00
 currency: USD
 po_no: 
+applies_to: PDS-3301
 source_file: pds-cm-3301.pdf
 ---
 # Invoice PDS-CM-3301

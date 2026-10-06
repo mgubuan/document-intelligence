@@ -32,7 +32,7 @@ Before anything else, whatever the user asked. It prints whose books these are, 
 | new files in the inbox (start.py lists them) | `02_extracted/CONTEXT.md` | list flagged documents for the user |
 | user fixed `_shared/` or a flagged record | run `python _system/standardize.py && python _system/rebuild.py` | report what's still flagged |
 | user asks a question about amounts | `03_data/CONTEXT.md` | answer with document numbers cited |
-| user asks how things relate ("how does X relate to Y", "who do we use for…") | run `python _system/graph.py "X" "Y"`, then add amounts from `03_data` | plain-English answer, documents cited |
+| user asks how things relate ("how does X relate to Y", "who do we use for…", "what did Jane approve", "do vendors share a bank account") | run `python _system/graph.py "X" "Y"`, then add amounts from `03_data` | plain-English answer, documents cited |
 | asked for status | run `python _system/start.py` | report its state lines and any matching exceptions |
 | asked what's paid or open | `03_data/CONTEXT.md` (invoice_balances) | answer with invoice numbers cited |
 | asked about month-end: accruals, cutoff, closed periods, prepaids | `03_data/CONTEXT.md` (accruals, periods, prepaid_schedule) | answer with documents cited; list accruals as suggestions, not entries |

@@ -253,6 +253,7 @@ for r in shared_table("budgets.md"):
 # ------------------------------------------------------------------ 3. load records
 ID_FIELD = {"invoice": "invoice_no", "purchase_order": "po_no", "payment": "payment_id", "contract": "contract_id", "receipt": "receipt_id"}
 triples, flagged, dupes, loaded, X = [], [], [], {}, []
+META = {}  # node -> record fields, for the people/credit edges added after loading
 counts = Counter()
 
 def fx(m, amount):
@@ -279,6 +280,7 @@ for f in sorted((ROOT / "02_extracted").glob("*.md"), key=lambda p: (len(p.name)
     v, key = m["vendor"], (rtype, m["vendor"], rid)
     node = f"{v}/{rid}"  # graph node name matches the database key
     dims = [m.get(k) or None for k in ("department", "class", "location", "project", "entity")]
+    META[node] = m
     try:
         if rtype == "invoice":
             total = num(m["total"])
@@ -405,6 +407,7 @@ for v, ctr, cap, spent in db.execute(f"""SELECT c.vendor, c.contract_id, c.total
 for inv_v, inv, ctr in db.execute(f"""SELECT i.vendor, i.invoice_no, c.contract_id FROM invoices i
         JOIN contracts c ON c.vendor = i.vendor AND {IN_TERM}"""):
     triples.append((f"{inv_v}/{inv}", "under_contract", f"{inv_v}/{ctr}"))
+    triples.append((f"{inv_v}/{ctr}", "covers", f"{inv_v}/{inv}"))
 
 # ------------------------------------------------------------------ 5. controller layer
 # 3-way match: what was billed vs what was received, per PO line
@@ -570,9 +573,42 @@ for v, ctr, title, end, deadline, ar, term in db.execute("""SELECT vendor, contr
     elif status == "missed":
         D.append(f"MISSED {deadline}: notice window for {v} {ctr} closed; {what} on {end}.")
 
+# ---- 7. graph: people, periods, dimensions, bank, and master-data links -----------------------
+# Links between real things only. Amounts, statuses and dates-as-math stay in the database.
+LOADED = {f"{v}/{n}": v for v, n in db.execute("SELECT vendor, number FROM records")}
+for node, m in META.items():
+    if node not in LOADED: continue
+    if (m.get("extracted_by") or "").lower() not in ("", "agent", "claude", "ai"): triples.append((m["extracted_by"], "extracted", node))
+    if m.get("applies_to"):   triples.append((node, "credits", f"{LOADED[node]}/{m['applies_to']}"))
+for v, n, who, role in db.execute("SELECT vendor, number, approver, role FROM approvals WHERE approver IS NOT NULL"):
+    triples += [(who, "approved", f"{v}/{n}")] + ([(who, "has_role", role)] if role else [])
+for period, who in db.execute("SELECT period, closed_by FROM periods WHERE closed_by IS NOT NULL AND closed_by <> ''"):
+    triples.append((who, "closed", period))
+for v, n, period in db.execute("SELECT vendor, invoice_no, posting_period FROM invoices WHERE posting_period IS NOT NULL"):
+    triples.append((f"{v}/{n}", "posted_in", period))
+for col, rel in (("department", "for_department"), ("class", "for_class"), ("location", "for_location"),
+                 ("project", "for_project"), ("entity", "for_entity")):
+    for v, n, val in db.execute(f"SELECT DISTINCT vendor, invoice_no, {col} FROM line_items WHERE {col} IS NOT NULL"):
+        triples.append((f"{v}/{n}", rel, val))
+for v, pid, txn in db.execute("SELECT vendor, payment_id, txn_id FROM payment_status WHERE txn_id IS NOT NULL"):
+    triples.append((f"{v}/{pid}", "cleared_as", f"bank txn {txn}"))
+for txn, acct in db.execute("SELECT txn_id, account FROM bank_transactions"):
+    triples.append((f"bank txn {txn}", "on_account", acct))
+banks = {}
+for v, last4 in db.execute("SELECT vendor, remit_bank_last4 FROM vendors WHERE COALESCE(remit_bank_last4, '') <> ''"):
+    triples.append((v, "remits_to", f"bank account ••{last4}")); banks.setdefault(last4, []).append(v)
+for last4, vs in banks.items():
+    if len(vs) > 1:
+        X.append(f"Shared bank account: {', '.join(vs)} all remit to a bank account ending {last4}. "
+                 "Two vendors paid to one account is a classic fake-vendor sign. Confirm both are real.")
+for acct, typ, pre in db.execute("SELECT gl_account, type, is_prepaid FROM accounts"):
+    triples.append((acct, "is_a", typ))
+    if yes(pre): triples.append((acct, "is_a", "prepaid"))
+
+
 KINDS = {"Over-billed", "Overpaid", "Outside contract", "Above contract rate", "Over contract value", "No receipt",
          "Not received", "Closed period", "Cutoff", "Prepaid without service period", "Over approval limit",
-         "Segregation of duties", "Inactive vendor", "Bank change", "Missing W-9", "Missing FX rate", "Unrecorded bank transaction"}
+         "Segregation of duties", "Inactive vendor", "Bank change", "Missing W-9", "Missing FX rate", "Unrecorded bank transaction", "Shared bank account"}
 db.executemany("INSERT INTO exceptions VALUES (?,?)", [(x.split(":")[0] if x.split(":")[0] in KINDS else "Missing link", x) for x in X])
 A = db.execute("SELECT kind, vendor, reference, period, amount, detail FROM accruals ORDER BY period, vendor").fetchall()
 
@@ -581,6 +617,7 @@ db.close()
 shutil.copyfile(TMP, DB)
 
 # ------------------------------------------------------------------ 6. outputs
+
 (ROOT / "03_data/exceptions.md").write_text(
     "# Exceptions\n\nGenerated by rebuild.py - do not edit. Fix the records, then rebuild.\n\n"
     + ("\n".join(f"- {x}" for x in X) if X else "None. Everything matches.")

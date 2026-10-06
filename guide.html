@@ -795,7 +795,7 @@ const FOLDERS=[
  {g:'The factory (set up once)'},
  {n:'_shared/',c:'#E8D49A',k:'factory',kl:'factory · you own it',d:'Your approved names: vendors (with every spelling seen), chart of accounts (with keywords), document types, and settings, including whose books this workspace holds. The agent reads these but never edits them.',r:'—',w:'you, the bookkeeper',o:'vendors.md, chart-of-accounts.md…'},
  {n:'_templates/',c:'#E8D49A',k:'factory',kl:'factory',d:'One record format per document type. Every record starts as a copy, which is why the scripts can always read them.',r:'—',w:'you (rarely)',o:'invoice.md, purchase_order.md, payment.md, contract.md'},
- {n:'_system/',c:'#E8D49A',k:'factory',kl:'factory · no AI inside',d:'The scripts, no AI inside. start.py is step 1 of every session. inbox.py finds new documents, standardize.py cleans and codes, rebuild.py builds the database and graph, graph.py answers how things relate, q.py runs a query, and selftest.py checks 127 accountant questions.',r:'—',w:'—',o:'start.py, standardize.py, rebuild.py, graph.py, selftest.py…'}
+ {n:'_system/',c:'#E8D49A',k:'factory',kl:'factory · no AI inside',d:'The scripts, no AI inside. start.py is step 1 of every session. inbox.py finds new documents, standardize.py cleans and codes, rebuild.py builds the database and graph, graph.py answers how things relate, q.py runs a query, and selftest.py checks 137 accountant questions.',r:'—',w:'—',o:'start.py, standardize.py, rebuild.py, graph.py, selftest.py…'}
 ];
 let fsel=5;
 function renderFolders(){
@@ -968,6 +968,7 @@ const CL=[
 ["Controls","Was everything billed actually received?","SELECT detail FROM exceptions WHERE kind='Not received'","The 3-way match: PO vs receipt vs invoice.","PO-7001: billed for 5 units of impression material, only 3 received."],
 ["Controls","Who approved what, and were they allowed to?","SELECT number, approver, role FROM approvals","Approvals come only from the document or from you. The agent never invents one.","Sam Lee (staff, limit $500) approved RENT-1001 for $4,000 (over limit). Jane Doe extracted and approved PDS-3301 (segregation of duties)."],
 ["Controls","Did any vendor change bank details?","SELECT detail FROM exceptions WHERE kind='Bank change'","Remit-to bank changes are the top AP fraud signal.","Pacific Dental Supply was paid by CHK-2002 on Oct 1, six days after its bank details changed. Confirm by phone."],
+["Controls","Do two vendors share a bank account?","python _system/graph.py \"Pacific\" \"Harbor\"","The graph links each vendor to its remit-to account, so a shared account shows up as a shared link.","Pacific Dental Supply and Harbor Insurance both remit to the account ending 9034. That's a classic fake-vendor sign: confirm both are real."],
 ["Controls","1099 totals and missing W-9s?","SELECT vendor, box_1099, w9_on_file, paid FROM vendor_1099","Built from the vendor list's 1099 columns plus payments.","Acme Bookkeeping $3,300 (NEC-1, W-9 on file). Oak Street $8,100 (MISC-1, no W-9 on file)."],
 ["Cash","Which checks are outstanding?","SELECT payment_id, amount FROM outstanding_payments","Payments are matched to BANK-*.csv by reference, then by amount within 7 days.","CHK-2002 for $1,100 hasn't cleared. And a $35 bank fee on Oct 1 has no payment record."],
 ["Cash","What credits are sitting unused?","SELECT reference, credit, kind FROM vendor_credits","Overpayments and credit memos not yet applied.","$100 overpaid on RENT-1001, and Pacific's $100 credit memo PDS-CM-3301."],
@@ -980,7 +981,7 @@ const CL=[
 const cseen=new Set();
 $('#cgroups').innerHTML=[...new Set(CL.map(c=>c[0]))].map(g=>`<div class="cg"><span class="eyebrow">${g}</span><div class="qchips">${CL.map((c,i)=>c[0]===g?`<button data-i="${i}">${c[1]}</button>`:'').join('')}</div></div>`).join('');
 function cshow(i){const c=CL[i];cseen.add(i);$$('#cgroups button').forEach(b=>{const j=+b.dataset.i;b.classList.toggle('on',j===i);b.classList.toggle('done',cseen.has(j))});
- $('#ccode').textContent='python _system/q.py "'+c[2]+'"';$('#cwhy').textContent=c[3];$('#cans').textContent=c[4];
+ $('#ccode').textContent=c[2].startsWith('python')?c[2]:'python _system/q.py "'+c[2]+'"';$('#cwhy').textContent=c[3];$('#cans').textContent=c[4];
  $('#cbar').style.width=(100*cseen.size/CL.length)+'%';$('#ccount').textContent=cseen.size===CL.length?'Month closed. Every check reviewed.':`${cseen.size} / ${CL.length} checked`}
 $('#cgroups').addEventListener('click',e=>{const b=e.target.closest('button');if(b)cshow(+b.dataset.i)});
 $('#ccount').textContent=`0 / ${CL.length} checked`;
