@@ -10,7 +10,7 @@
 | `selftest.py` | asks 100 accountant questions of a built-in test client and checks every answer | `python _system/selftest.py` |
 | `q.py` | runs one SQL query | `python _system/q.py "SELECT ..."` |
 
-Jev is used by `standardize.py` only if `JEV_API_KEY` is set; otherwise an offline matcher runs.
+All scripts are offline: no AI, no network calls. The only AI step is the agent reading documents (and suggesting fixes for flagged items, which a person approves).
 
 ## Protecting history
 `standardize.py` never re-codes records that are already settled, so editing `_shared/` can't silently change closed periods.

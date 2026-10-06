@@ -5,11 +5,12 @@ Handles three record types (set by `record_type:` in each record; missing = invo
   payment         -> clean vendor, applied amounts must sum to the payment amount
   contract        -> clean vendor, date/renewal sanity checks, and ALWAYS held for a person to confirm
                      the key terms against the signed contract (cleared only by approved_by_human: true)
-Uses Jev if JEV_API_KEY is set, otherwise an offline matcher. Raw values are never overwritten.
+Fully offline: no AI, no network. Uncertain matches are flagged for a person, never guessed.
+Raw values are never overwritten.
 Run: python _system/standardize.py         -> new records + anything still flagged
      python _system/standardize.py --all   -> also re-code settled records (changes history)
 Records with approved_by_human: true are never changed."""
-import difflib, json, os, pathlib, re, sys, urllib.request
+import difflib, pathlib, re, sys
 
 REDO_ALL = "--all" in sys.argv
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -59,16 +60,7 @@ def wrong_client(meta):
     c = meta.get("client", "")
     return [] if norm(c) == norm(CLIENT) else [f"addressed to '{c or 'no client'}', but this workspace is {CLIENT}"]
 
-# ---------- Jev (hosted, fast). Check request shape against Jev's docs before relying on it. ----------
-def jev(text, options):
-    req = urllib.request.Request(
-        "https://jevtypesafeai.com/api/v1/decide",
-        data=json.dumps({"input": text, "questions": {"q": {"options": list(options)}}}).encode(),
-        headers={"Authorization": f"Bearer {os.environ['JEV_API_KEY']}", "Content-Type": "application/json"})
-    out = json.load(urllib.request.urlopen(req, timeout=10))["answers"]["q"]
-    return out["key"], float(out["confidence"])
-
-# ---------- Offline fallback (no network, no AI) ----------
+# ---------- Matching (no network, no AI) ----------
 def offline(text, options):
     t = text.lower()
     best, score = None, 0.0
@@ -86,11 +78,6 @@ def offline_doctype(text):
     return (best, 0.9) if hits[best] else ("invoice", 0.5)
 
 def classify(text, options):
-    if os.environ.get("JEV_API_KEY"):
-        try:
-            return jev(text, options)
-        except Exception as e:
-            print(f"  Jev failed ({e}); using offline matcher")
     return offline_doctype(text) if options is DOCTYPES else offline(text, options)
 
 skipped = 0

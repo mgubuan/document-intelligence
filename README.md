@@ -62,7 +62,7 @@ _system/           start, standardize, rebuild, graph, query, selftest scripts
 
 ## Privacy
 
-Files stay on your computer. When the agent reads a document, its content is sent to Anthropic for processing. Under a commercial Claude plan (Team, Enterprise, or API) it is not used for training. For HIPAA or other regulated data, use Claude Enterprise or the API with a signed BAA and zero data retention, and keep sessions local. Personal Free/Pro/Max plans are not suitable for client data. Optional: `standardize.py` can use the [Jev](https://jevtypesafeai.com) classifier if `JEV_API_KEY` is set; that sends vendor names and line descriptions to Jev. Leave it unset to stay offline. Not legal advice — have counsel review regulated setups.
+Files stay on your computer. When the agent reads a document, its content is sent to Anthropic for processing. Under a commercial Claude plan (Team, Enterprise, or API) it is not used for training. For HIPAA or other regulated data, use Claude Enterprise or the API with a signed BAA and zero data retention, and keep sessions local. Personal Free/Pro/Max plans are not suitable for client data. The scripts themselves make no network calls. Not legal advice — have counsel review regulated setups.
 
 ## For developers
 

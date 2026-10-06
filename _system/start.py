@@ -93,7 +93,9 @@ elif unstandardized:
 elif stale:
     print("  Run: python _system/rebuild.py && python _system/start.py")
 elif flagged:
-    print("  Show the user what's flagged and why. They decide; you don't clear flags yourself:")
+    print("  Show the user what's flagged and why, and for each one suggest the fix: an alias or keyword")
+    print("  to add to an EXISTING vendor or account in _shared/ (see 02_extracted/CONTEXT.md). They decide;")
+    print("  you never edit _shared/ or clear flags yourself:")
     for n, r in flagged[:20]: print(f"    - {n}: {r}")
     print("  After they fix a master list or add approved_by_human: true, run:\n"
           "    python _system/standardize.py && python _system/rebuild.py && python _system/start.py")

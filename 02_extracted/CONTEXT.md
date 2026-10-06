@@ -32,4 +32,9 @@ Do NOT load: other records, `03_data/`, `04_graph/`.
 ## Human check
 Every contract is held for review until a person checks its key terms, dates, renewal and notice clauses against the signed copy, then adds `approved_by_human: true`.
 
-Open every record with `needs_review: true`. Either fix the master list in `../_shared/` (preferred — it fixes every future invoice too) and re-run step 4, or correct the record and add the line `approved_by_human: true` to its frontmatter, then re-run step 4. (Setting `needs_review: false` by hand gets overwritten.)
+Open every record with `needs_review: true`.
+
+**Suggest the fix, from the approved lists only.** For each flagged item, propose the smallest change to `_shared/` that would resolve it, and let the person decide. Examples:
+- unmatched vendor "AMZN Mktp US" → *add "AMZN Mktp US" as an alias of Amazon in vendors.md?*
+- line "Dental chair cushion" coded 9999 → *add "cushion" as a keyword on 6400 Office Supplies?*
+Only suggest vendors and accounts that already exist in the lists. If none fits, say so and ask; never invent a new vendor or account. Never edit `_shared/` yourself. Either fix the master list in `../_shared/` (preferred — it fixes every future invoice too) and re-run step 4, or correct the record and add the line `approved_by_human: true` to its frontmatter, then re-run step 4. (Setting `needs_review: false` by hand gets overwritten.)
